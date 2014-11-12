@@ -39,8 +39,11 @@ class Drawing(object):
         self.objects.append(obj)
 
     def __str__(self):
-        draw = SVGDrawing(size=(self.size[0] * mm, self.size[1] * mm))
+        draw = SVGDrawing(size=(self.size[0] * mm, self.size[1] * mm), profile='full')
         for obj in self.objects:
             for pline in obj._draw():
                 draw.add(pline._draw())
+                mask = pline._mask()
+                if mask:
+                    draw.defs.add(mask)
         return draw.tostring()
