@@ -11,6 +11,8 @@ class Pline(object):
     def _draw(self):
         raise NotImplemented("Draw method is not yet implemented")
 
+    def _mask(self):
+        return False
 
 class Rect(Pline):
 
@@ -26,9 +28,6 @@ class Rect(Pline):
     def _draw(self):
         return shapes.Rect(self.corner, self.size)
 
-    def _mask(self):
-        return False
-
 
 class RectFrame(Pline):
 
@@ -41,16 +40,9 @@ class RectFrame(Pline):
         self.inner_size = ((width - 2 * wall_width) * mm, (height - 2 * wall_width) * mm)
 
     def _draw(self):
-        rect = shapes.Rect(self.corner, self.size, **{"mask": "url(#rect-clip)", "stroke": "black", "stroke-width": "2", "fill": "#fff"})
-        return rect
-
-    def _mask(self):
-        outer_rect = shapes.Rect(self.corner, self.size, fill="#FFF")
-        inner_rect = shapes.Rect(self.inner_corner, self.inner_size, **{"fill": "#000", "stroke": "red", "stroke-width": "2"})
-        mask = masking.Mask(id="rect-clip")
-        mask.add(outer_rect)
-        mask.add(inner_rect)
-        return mask
+        rect = shapes.Rect(self.corner, self.size, **{"stroke": "black", "stroke-width": "2", "fill": "#fff"})
+        inner_rect = shapes.Rect(self.inner_corner, self.inner_size, **{"stroke": "black", "stroke-width": "2", "fill": "#fff"})
+        return [rect, inner_rect]
 
 
 class Frame(object):

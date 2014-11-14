@@ -42,7 +42,14 @@ class Drawing(object):
         draw = SVGDrawing(size=(self.size[0] * mm, self.size[1] * mm), profile='full')
         for obj in self.objects:
             for pline in obj._draw():
-                draw.add(pline._draw())
+                drawed = pline._draw()
+                # pline can consists of several objects
+                if hasattr(drawed, '__iter__'):
+                    for obj in drawed:
+                        draw.add(obj)
+                else:
+                    draw.add(obj)
+                # pline can contain masks or clips
                 mask = pline._mask()
                 if mask:
                     draw.defs.add(mask)
