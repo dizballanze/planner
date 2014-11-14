@@ -1,7 +1,8 @@
 """
 Represents frame (plane) defined by one or few polygons.
 """
-from svgwrite import shapes, path, mm, masking
+from svgwrite import shapes, path, mm, masking, pattern
+import math
 
 
 class Pline(object):
@@ -40,9 +41,34 @@ class RectFrame(Pline):
         self.inner_size = ((width - 2 * wall_width) * mm, (height - 2 * wall_width) * mm)
 
     def _draw(self):
-        rect = shapes.Rect(self.corner, self.size, **{"stroke": "black", "stroke-width": "2", "fill": "#fff"})
+        rect_params = {"stroke": "black", "stroke-width": "2"}
+        res = []
+        if hasattr(self, "hatch") and self.hatch:
+            rect_params['style'] = "fill: url(#hatching)"
+            res.append(self.hatch)
+        rect = shapes.Rect(self.corner, self.size, **rect_params)
         inner_rect = shapes.Rect(self.inner_corner, self.inner_size, **{"stroke": "black", "stroke-width": "2", "fill": "#fff"})
-        return [rect, inner_rect]
+        res.append(rect)
+        res.append(inner_rect)
+        return res
+
+    def add_hatching(self, angle=45, distance=3, width=1, color="black"):
+        """
+        Add hatching to the walls.
+        angle - angle of hatches in deg
+        distance - distance between hatches
+        width - stroke-width
+        """
+        angle = math.radians(angle)
+        style = "stroke: {color}; width: {width}".format(color=color, width=width)
+        width = distance / math.sin(angle)
+        height = width * math.tan(angle)
+        print(width, height)
+        self.hatch = pattern.Pattern((0 * mm, 0 * mm), (width * mm, height * mm), id="hatching", patternUnits="userSpaceOnUse")
+        self.hatch.add(shapes.Line((0 * mm, 0 * mm), (width * mm, height * mm), style=style))
+        self.hatch.add(shapes.Line((-1 * mm, (height - 1) * mm), (1 * mm, (height + 1) * mm), style=style))
+        self.hatch.add(shapes.Line(((width - 1) * mm, -1 * mm), ((width + 1) * mm, 1 * mm), style=style))
+        return self.hatch
 
 
 class Frame(object):
