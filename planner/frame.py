@@ -6,9 +6,9 @@ from shortuuid import uuid
 import math
 
 
-class Pline(object):
+class Polygon(object):
 
-    """ Absctract PolyLine class """
+    """ Absctract Polygon class """
 
     @property
     def uuid(self):
@@ -17,57 +17,14 @@ class Pline(object):
         return self._uuid
 
     def _draw(self):
-        raise NotImplemented("Draw method is not yet implemented")
+        raise NotImplementedError("Draw method is not yet implemented")
 
     def _mask(self):
         return False
 
-
-class Rect(Pline):
-
-    """ Rectangle representation """
-
-    def __init__(self, x, y, width, height):
-        """
-        x, y - coordinates of left top corner
-        """
-        self.corner = (x, y)
-        self.size = (width, height)
-
-    def _draw(self):
-        return shapes.Rect(self.corner, self.size)
-
-
-class RectFrame(Pline):
-
-    """ Rectangle frame representation """
-
-    def __init__(self, x, y, width, height, wall_width):
-        self.corner = (x * mm, y * mm)
-        self.size = (width * mm, height * mm)
-        self.inner_corner = ((x + wall_width) * mm, (y + wall_width) * mm)
-        self.inner_size = ((width - 2 * wall_width) * mm, (height - 2 * wall_width) * mm)
-
     @property
     def _hatching_id(self):
         return "hatching-{}".format(self.uuid)
-
-    def _draw(self):
-        rect_params = {"stroke": "black", "stroke-width": "2"}
-        res = []
-        if hasattr(self, "hatch") and self.hatch:
-            rect_params['style'] = "fill: url(#{})".format(self._hatching_id)
-            res.append(self.hatch)
-        if hasattr(self, "filling"):
-            rect_params['fill'] = self.filling
-        else:
-            rect_params['fill'] = "#fff"
-        rect = shapes.Rect(self.corner, self.size, **rect_params)
-        inner_rect = shapes.Rect(
-            self.inner_corner, self.inner_size, **{"stroke": "black", "stroke-width": "2", "fill": "#fff"})
-        res.append(rect)
-        res.append(inner_rect)
-        return res
 
     def add_hatching(self, angle=45, distance=3, width=1, color="black"):
         """
@@ -99,6 +56,49 @@ class RectFrame(Pline):
         if hasattr(self, 'hatch'):
             del self.hatch
         self.filling = color
+
+
+class Rect(Polygon):
+
+    """ Rectangle representation """
+
+    def __init__(self, x, y, width, height):
+        """
+        x, y - coordinates of left top corner
+        """
+        self.corner = (x, y)
+        self.size = (width, height)
+
+    def _draw(self):
+        return shapes.Rect(self.corner, self.size)
+
+
+class RectFrame(Polygon):
+
+    """ Rectangle frame representation """
+
+    def __init__(self, x, y, width, height, wall_width):
+        self.corner = (x * mm, y * mm)
+        self.size = (width * mm, height * mm)
+        self.inner_corner = ((x + wall_width) * mm, (y + wall_width) * mm)
+        self.inner_size = ((width - 2 * wall_width) * mm, (height - 2 * wall_width) * mm)
+
+    def _draw(self):
+        rect_params = {"stroke": "black", "stroke-width": "2"}
+        res = []
+        if hasattr(self, "hatch") and self.hatch:
+            rect_params['style'] = "fill: url(#{})".format(self._hatching_id)
+            res.append(self.hatch)
+        if hasattr(self, "filling"):
+            rect_params['fill'] = self.filling
+        else:
+            rect_params['fill'] = "#fff"
+        rect = shapes.Rect(self.corner, self.size, **rect_params)
+        inner_rect = shapes.Rect(
+            self.inner_corner, self.inner_size, **{"stroke": "black", "stroke-width": "2", "fill": "#fff"})
+        res.append(rect)
+        res.append(inner_rect)
+        return res
 
 
 class Frame(object):
