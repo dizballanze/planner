@@ -17,8 +17,8 @@ class BaseTestCase(TestCase):
         Check that specified attribute of svg object is has specified value.
         """
         if svg_obj.attribs[attrib] != value:
-            message = "SVG object has attribute {attr_name}={attr_value}, but expected value is {expected_value}".format(
+            msg = "SVG object has attribute {attr_name}={attr_value}, but expected value is {expected_value}".format(
                 attr_name=attrib,
                 attr_value=svg_obj.attribs[attrib],
                 expected_value=value)
-            self.fail(message)
+            self.fail(msg)

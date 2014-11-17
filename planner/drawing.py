@@ -4,6 +4,7 @@ Container of all plan objects.
 """
 from svgwrite import Drawing as SVGDrawing, mm
 
+
 class Drawing(object):
 
     """ Container of plan objects """
