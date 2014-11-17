@@ -57,6 +57,10 @@ class RectFrame(Pline):
         if hasattr(self, "hatch") and self.hatch:
             rect_params['style'] = "fill: url(#{})".format(self._hatching_id)
             res.append(self.hatch)
+        if hasattr(self, "filling"):
+            rect_params['fill'] = self.filling
+        else:
+            rect_params['fill'] = "#fff"
         rect = shapes.Rect(self.corner, self.size, **rect_params)
         inner_rect = shapes.Rect(self.inner_corner, self.inner_size, **{"stroke": "black", "stroke-width": "2", "fill": "#fff"})
         res.append(rect)
@@ -69,7 +73,10 @@ class RectFrame(Pline):
         angle - angle of hatches in deg
         distance - distance between hatches
         width - stroke-width
+        **Replaces all previously added hatchings of fillings.**
         """
+        if hasattr(self, "filling"):
+            del self.filling
         angle = math.radians(angle)
         style = "stroke: {color}; width: {width}".format(color=color, width=width)
         width = distance / math.sin(angle)
@@ -80,6 +87,15 @@ class RectFrame(Pline):
         self.hatch.add(shapes.Line((-1 * mm, (height - 1) * mm), (1 * mm, (height + 1) * mm), style=style))
         self.hatch.add(shapes.Line(((width - 1) * mm, -1 * mm), ((width + 1) * mm, 1 * mm), style=style))
         return self.hatch
+
+    def add_filling(self, color):
+        """
+        Add solid filling of frame with specified color.
+        **Replaces all previously added hatchings of fillings.**
+        """
+        if hasattr(self, 'hatch'):
+            del self.hatch
+        self.filling = color
 
 
 class Frame(object):
