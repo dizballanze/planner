@@ -2,12 +2,19 @@
 Represents frame (plane) defined by one or few polygons.
 """
 from svgwrite import shapes, path, mm, masking, pattern
+from shortuuid import uuid
 import math
 
 
 class Pline(object):
 
     """ Absctract PolyLine class """
+
+    @property
+    def uuid(self):
+        if not hasattr(self, "_uuid"):
+            self._uuid = uuid()
+        return self._uuid
 
     def _draw(self):
         raise NotImplemented("Draw method is not yet implemented")
@@ -40,11 +47,15 @@ class RectFrame(Pline):
         self.inner_corner = ((x + wall_width) * mm, (y + wall_width) * mm)
         self.inner_size = ((width - 2 * wall_width) * mm, (height - 2 * wall_width) * mm)
 
+    @property
+    def _hatching_id(self):
+        return "hatching-{}".format(self.uuid)
+
     def _draw(self):
         rect_params = {"stroke": "black", "stroke-width": "2"}
         res = []
         if hasattr(self, "hatch") and self.hatch:
-            rect_params['style'] = "fill: url(#hatching)"
+            rect_params['style'] = "fill: url(#{})".format(self._hatching_id)
             res.append(self.hatch)
         rect = shapes.Rect(self.corner, self.size, **rect_params)
         inner_rect = shapes.Rect(self.inner_corner, self.inner_size, **{"stroke": "black", "stroke-width": "2", "fill": "#fff"})
@@ -63,8 +74,8 @@ class RectFrame(Pline):
         style = "stroke: {color}; width: {width}".format(color=color, width=width)
         width = distance / math.sin(angle)
         height = width * math.tan(angle)
-        print(width, height)
-        self.hatch = pattern.Pattern((0 * mm, 0 * mm), (width * mm, height * mm), id="hatching", patternUnits="userSpaceOnUse")
+        self.hatch = pattern.Pattern((0 * mm, 0 * mm), (width * mm, height * mm), id=self._hatching_id, patternUnits="userSpaceOnUse")
+        self.hatch.add(shapes.Rect((0 * mm, 0 * mm), (width * mm, height * mm), fill="#fff"))
         self.hatch.add(shapes.Line((0 * mm, 0 * mm), (width * mm, height * mm), style=style))
         self.hatch.add(shapes.Line((-1 * mm, (height - 1) * mm), (1 * mm, (height + 1) * mm), style=style))
         self.hatch.add(shapes.Line(((width - 1) * mm, -1 * mm), ((width + 1) * mm, 1 * mm), style=style))

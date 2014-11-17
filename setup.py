@@ -8,5 +8,5 @@ setup(name='planner',
       author_email='dizballanze@gmail.com',
       license='MIT',
       packages=['planner'],
-      install_requires=['svgwrite==1.1.6'],
+      install_requires=['svgwrite==1.1.6', 'shortuuid==0.4.2'],
       zip_safe=False)
