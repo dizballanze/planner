@@ -1,5 +1,4 @@
 from tests import BaseTestCase
-import unittest
 
 
 class TestFrame(BaseTestCase):
