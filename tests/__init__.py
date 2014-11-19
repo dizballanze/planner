@@ -22,3 +22,19 @@ class BaseTestCase(TestCase):
                 attr_value=svg_obj.attribs[attrib],
                 expected_value=value)
             self.fail(msg)
+
+    def assertStyle(self, svg_obj, style, value):
+        """
+        Check that specified style of svg object is has specified value.
+        """
+        styles = svg_obj.attribs["style"]
+        styles = styles.split(";")
+        styles_dict = {}
+        for style_pair in styles:
+            style_key, style_value = [val.strip() for val in style_pair.split(":")]
+            styles_dict[style_key] = style_value
+        if style not in styles_dict:
+            self.fail("Style {style} not found".format(style=style))
+        if styles_dict[style] != value:
+            self.fail("Style {style} has value {value} but expected value is {expected_value}".format(
+                style=style, value=styles_dict[style], expected_value=value))

@@ -32,26 +32,29 @@ class Polygon(object):
         angle - angle of hatches in deg
         distance - distance between hatches
         width - stroke-width
-        **Replaces all previously added hatchings of fillings.**
+        **Replaces all previously added hatchings or fillings.**
         """
         if hasattr(self, "filling"):
             del self.filling
         angle = math.radians(angle)
-        style = "stroke: {color}; width: {width}".format(color=color, width=width)
-        width = distance / math.sin(angle)
-        height = width * math.tan(angle)
+        style = "stroke: {color}; width: {width}".format(color=color, width=width * mm)
+        pattern_width = distance / math.sin(angle)
+        pattern_height = pattern_width * math.tan(angle)
         self.hatch = pattern.Pattern(
-            (0 * mm, 0 * mm), (width * mm, height * mm), id=self._hatching_id, patternUnits="userSpaceOnUse")
-        self.hatch.add(shapes.Rect((0 * mm, 0 * mm), (width * mm, height * mm), fill="#fff"))
-        self.hatch.add(shapes.Line((0 * mm, 0 * mm), (width * mm, height * mm), style=style))
-        self.hatch.add(shapes.Line((-1 * mm, (height - 1) * mm), (1 * mm, (height + 1) * mm), style=style))
-        self.hatch.add(shapes.Line(((width - 1) * mm, -1 * mm), ((width + 1) * mm, 1 * mm), style=style))
+            (0 * mm, 0 * mm),
+            (pattern_width * mm, pattern_height * mm), id=self._hatching_id, patternUnits="userSpaceOnUse")
+        self.hatch.add(shapes.Rect((0 * mm, 0 * mm), (pattern_width * mm, pattern_height * mm), fill="#fff"))
+        self.hatch.add(shapes.Line((0 * mm, 0 * mm), (pattern_width * mm, pattern_height * mm), style=style))
+        self.hatch.add(
+            shapes.Line((-1 * mm, (pattern_height - 1) * mm), (1 * mm, (pattern_height + 1) * mm), style=style))
+        self.hatch.add(
+            shapes.Line(((pattern_width - 1) * mm, -1 * mm), ((pattern_width + 1) * mm, 1 * mm), style=style))
         return self.hatch
 
     def add_filling(self, color):
         """
         Add solid filling of frame with specified color.
-        **Replaces all previously added hatchings of fillings.**
+        **Replaces all previously added hatchings or fillings.**
         """
         if hasattr(self, 'hatch'):
             del self.hatch

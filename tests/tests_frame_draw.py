@@ -13,6 +13,11 @@ class TestPolygon(BaseTestCase):
 
     """ Test base class for all frames """
 
+    ANGLE = 30
+    DISTANCE = 5
+    WIDTH = 2
+    COLOR = "black"
+
     @classmethod
     def setUpClass(cls):
         from planner.frame import Polygon
@@ -32,21 +37,57 @@ class TestPolygon(BaseTestCase):
         with self.assertRaises(NotImplementedError):
             self.polygon._draw()
 
-    @unittest.skip("Not yet implemented")
     def test_hatching(self):
-        pass
+        """
+        Test hatching pattern svg elements
+        """
+        from svgwrite import pattern, mm
+        import math
+        # Check pattern element
+        self.polygon.add_hatching(self.ANGLE, self.DISTANCE, self.WIDTH, self.COLOR)
+        hatch = self.polygon.hatch
+        self.assertIsInstance(hatch, pattern.Pattern)
+        self.assertAttrib(hatch, 'x', 0 * mm)
+        self.assertAttrib(hatch, 'y', 0 * mm)
+        width = (self.DISTANCE / math.sin(math.radians(self.ANGLE)))
+        self.assertAttrib(hatch, 'width', width * mm)
+        height = width * math.tan(math.radians(self.ANGLE))
+        self.assertAttrib(hatch, 'height', height * mm)
+        self.assertAttrib(hatch, 'id', self.polygon._hatching_id)
+        # Check inner elements
+        self.assertLength(hatch.elements, 4)
+        self.assertStyle(hatch.elements[1], 'stroke', self.COLOR)
+        self.assertStyle(hatch.elements[1], 'width', self.WIDTH * mm)
 
-    @unittest.skip("Not yet implemented")
     def test_hatching_id(self):
-        pass
+        """
+        Hatching id should contain polygon uuid
+        """
+        self.polygon.add_hatching(self.ANGLE, self.DISTANCE, self.WIDTH, self.COLOR)
+        self.assertIn(self.polygon.uuid, self.polygon._hatching_id)
 
-    @unittest.skip("Not yet implemented")
     def test_filling(self):
-        pass
+        """
+        Test polygon filling (with solid color)
+        """
+        self.polygon.add_filling(self.COLOR)
+        self.assertEqual(self.polygon.filling, self.COLOR)
 
-    @unittest.skip("Not yet implemented")
     def test_filling_hatching_replace(self):
-        pass
+        """
+        Test that only latest setted filling/hatching is used.
+        """
+        self.assertFalse(hasattr(self.polygon, 'hatch'))
+        self.assertFalse(hasattr(self.polygon, 'filling'))
+        self.polygon.add_hatching(self.ANGLE, self.DISTANCE, self.WIDTH, self.COLOR)
+        self.assertTrue(hasattr(self.polygon, 'hatch'))
+        self.assertFalse(hasattr(self.polygon, 'filling'))
+        self.polygon.add_filling(self.COLOR)
+        self.assertFalse(hasattr(self.polygon, 'hatch'))
+        self.assertTrue(hasattr(self.polygon, 'filling'))
+        self.polygon.add_hatching(self.ANGLE, self.DISTANCE, self.WIDTH, self.COLOR)
+        self.assertTrue(hasattr(self.polygon, 'hatch'))
+        self.assertFalse(hasattr(self.polygon, 'filling'))
 
 
 class TestRectFrame(BaseTestCase):
