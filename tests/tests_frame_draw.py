@@ -94,19 +94,27 @@ class TestRectFrame(BaseTestCase):
 
     """ Test of rectangle frame """
 
+    # Constructor params
     CORNER = (10, 20)  # Corner coordinates
     SIZES = (350, 250)  # Sizes (WIDTH x HEIGHT)
     WALL_WIDTH = 25
+    # Hatching / filling params
+    ANGLE = 30
+    DISTANCE = 5
+    WIDTH = 2
+    COLOR = "black"
 
     @classmethod
     def setUpClass(cls):
         from planner.frame import RectFrame
         cls.RectFrame = RectFrame
 
+    def setUp(self):
+        self.rect_frame = self.RectFrame(self.CORNER[0], self.CORNER[1], self.SIZES[0], self.SIZES[1], self.WALL_WIDTH)
+
     def test_draw(self):
         """ Test frame drawing. Should create correct SVG objects. """
-        rect_frame = self.RectFrame(self.CORNER[0], self.CORNER[1], self.SIZES[0], self.SIZES[1], self.WALL_WIDTH)
-        svg_objects = rect_frame._draw()
+        svg_objects = self.rect_frame._draw()
         self.assertLength(svg_objects, 2)
         outer, inner = svg_objects
         from svgwrite import shapes, mm
@@ -122,13 +130,22 @@ class TestRectFrame(BaseTestCase):
         self.assertAttrib(inner, 'width', (self.SIZES[0] - 2 * self.WALL_WIDTH) * mm)
         self.assertAttrib(inner, 'height', (self.SIZES[1] - 2 * self.WALL_WIDTH) * mm)
 
-    @unittest.skip("Not yet implemented")
     def test_hatching(self):
-        pass
+        """
+        Test that hatching appends to frame
+        """
+        self.rect_frame.add_hatching(self.ANGLE, self.DISTANCE, self.WIDTH, self.COLOR)
+        svg_objects = self.rect_frame._draw()
+        self.assertEqual(self.rect_frame.hatch, svg_objects[0])
+        self.assertStyle(svg_objects[1], 'fill', 'url(#{})'.format(self.rect_frame._hatching_id))
 
-    @unittest.skip("Not yet implemented")
     def test_filling(self):
-        pass
+        """
+        Test that filling appends to frame
+        """
+        self.rect_frame.add_filling(self.COLOR)
+        svg_objects = self.rect_frame._draw()
+        self.assertAttrib(svg_objects[0], 'fill', self.COLOR)
 
 
 @unittest.skip("Not yet implemented")
