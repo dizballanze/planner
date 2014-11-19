@@ -69,11 +69,22 @@ class Rect(Polygon):
         """
         x, y - coordinates of left top corner
         """
-        self.corner = (x, y)
-        self.size = (width, height)
+        self.corner = (x * mm, y * mm)
+        self.size = (width * mm, height * mm)
 
     def _draw(self):
-        return shapes.Rect(self.corner, self.size)
+        res = []
+        rect_params = {}
+        if hasattr(self, "hatch") and self.hatch:
+            rect_params['style'] = "fill: url(#{})".format(self._hatching_id)
+            res.append(self.hatch)
+        if hasattr(self, "filling"):
+            rect_params['fill'] = self.filling
+        else:
+            rect_params['fill'] = "#fff"
+        rect = shapes.Rect(self.corner, self.size, **rect_params)
+        res.append(rect)
+        return res
 
 
 class RectFrame(Polygon):
