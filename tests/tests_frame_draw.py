@@ -130,6 +130,18 @@ class TestRectFrame(BaseTestCase):
         self.assertAttrib(inner, 'width', (self.SIZES[0] - 2 * self.WALL_WIDTH) * mm)
         self.assertAttrib(inner, 'height', (self.SIZES[1] - 2 * self.WALL_WIDTH) * mm)
 
+    def test_additional_attribs(self):
+        """
+        Should accept additional attributes for outer rectangle
+        """
+        attribs = {'opacity': 0.5, 'fill': "#55FF66"}
+        rect_frame = self.RectFrame(
+            self.CORNER[0], self.CORNER[1], self.SIZES[0], self.SIZES[1], self.WALL_WIDTH, **attribs)
+        svg_objects = rect_frame._draw()
+        outer_rect = svg_objects[0]
+        for attr, value in attribs.items():
+            self.assertAttrib(outer_rect, attr, value)
+
     def test_hatching(self):
         """
         Test that hatching appends to frame
@@ -181,6 +193,16 @@ class TestRect(BaseTestCase):
         self.assertAttrib(svg_object, 'y', self.CORNER[1] * mm)
         self.assertAttrib(svg_object, 'width', self.SIZES[0] * mm)
         self.assertAttrib(svg_object, 'height', self.SIZES[1] * mm)
+
+    def test_additional_attribs(self):
+        """
+        Should accept additional attributes for rectangle
+        """
+        attribs = {'opacity': 0.5, 'fill': "#55FF66"}
+        rect = self.Rect(self.CORNER[0], self.CORNER[1], self.SIZES[0], self.SIZES[1], **attribs)
+        svg_objects = rect._draw()
+        for attr, value in attribs.items():
+            self.assertAttrib(svg_objects[0], attr, value)
 
     def test_hatching(self):
         """

@@ -65,23 +65,25 @@ class Rect(Polygon):
 
     """ Rectangle representation """
 
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, **attribs):
         """
         x, y - coordinates of left top corner
         """
         self.corner = (x * mm, y * mm)
         self.size = (width * mm, height * mm)
+        self.attribs = attribs
 
     def _draw(self):
         res = []
-        rect_params = {}
+        rect_params = self.attribs.copy()
         if hasattr(self, "hatch") and self.hatch:
             rect_params['style'] = "fill: url(#{})".format(self._hatching_id)
             res.append(self.hatch)
         if hasattr(self, "filling"):
             rect_params['fill'] = self.filling
         else:
-            rect_params['fill'] = "#fff"
+            if 'fill' not in self.attribs:
+                rect_params['fill'] = "#fff"
         rect = shapes.Rect(self.corner, self.size, **rect_params)
         res.append(rect)
         return res
@@ -91,14 +93,15 @@ class RectFrame(Polygon):
 
     """ Rectangle frame representation """
 
-    def __init__(self, x, y, width, height, wall_width):
+    def __init__(self, x, y, width, height, wall_width, **attribs):
         self.corner = (x * mm, y * mm)
         self.size = (width * mm, height * mm)
         self.inner_corner = ((x + wall_width) * mm, (y + wall_width) * mm)
         self.inner_size = ((width - 2 * wall_width) * mm, (height - 2 * wall_width) * mm)
+        self.attribs = attribs or dict()
 
     def _draw(self):
-        rect_params = {"stroke": "black", "stroke-width": "2"}
+        rect_params = self.attribs.copy()
         res = []
         if hasattr(self, "hatch") and self.hatch:
             rect_params['style'] = "fill: url(#{})".format(self._hatching_id)
@@ -106,7 +109,8 @@ class RectFrame(Polygon):
         if hasattr(self, "filling"):
             rect_params['fill'] = self.filling
         else:
-            rect_params['fill'] = "#fff"
+            if 'fill' not in rect_params:
+                rect_params['fill'] = "#fff"
         rect = shapes.Rect(self.corner, self.size, **rect_params)
         inner_rect = shapes.Rect(
             self.inner_corner, self.inner_size, **{"stroke": "black", "stroke-width": "2", "fill": "#fff"})
