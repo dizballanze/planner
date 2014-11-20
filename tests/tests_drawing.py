@@ -27,10 +27,28 @@ class TestDrawing(BaseTestCase):
         drawing = self.Drawing("A4")
         self.assertSequenceEqual(drawing.size, (297, 210))
 
-    @unittest.skip("Not implemented")
     def test_add(self):
-        pass
+        """
+        Test adding objects to drawing
+        """
+        from planner.frame import Frame
+        frame = Frame()
+        self.drawing.add(frame)
+        self.assertIn(frame, self.drawing.objects)
 
-    @unittest.skip("Not implemented")
     def test_render(self):
-        pass
+        """
+        Check that rendered code contained code of every drawing element
+        """
+        from planner.frame import Frame
+        frame = Frame()
+        rect = frame.add_rect()
+        rect_frame = frame.add_rect_frame()
+        self.drawing.add(frame)
+        frame2 = Frame()
+        rect2 = frame2.add_rect(x=10, y=10)
+        self.drawing.add(frame2)
+        rendered = str(self.drawing)
+        for element in [rect, rect_frame, rect2]:
+            for shape in element._draw():
+                self.assertIn(shape.tostring(), rendered)
