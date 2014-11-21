@@ -93,6 +93,8 @@ class RectFrame(Polygon):
 
     """ Rectangle frame representation """
 
+    DEFAULT_PARAMS = {"stroke": "#000", "stroke-width": "2"}
+
     def __init__(self, x, y, width, height, wall_width, **attribs):
         self.corner = (x * mm, y * mm)
         self.size = (width * mm, height * mm)
@@ -101,7 +103,8 @@ class RectFrame(Polygon):
         self.attribs = attribs or dict()
 
     def _draw(self):
-        rect_params = self.attribs.copy()
+        rect_params = self.DEFAULT_PARAMS.copy()
+        rect_params.update(self.attribs)
         res = []
         if hasattr(self, "hatch") and self.hatch:
             rect_params['style'] = "fill: url(#{})".format(self._hatching_id)
