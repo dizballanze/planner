@@ -108,6 +108,15 @@ class TestPolygon(BaseTestCase):
         self.assertTrue(self.polygon._is_point_on_line(lp1, lp2, point))
 
 
+class TestAperture(BaseTestCase):
+
+    """
+    Test aperture representation class
+    """
+
+    pass
+
+
 class TestRectFrame(BaseTestCase):
 
     """ Test of rectangle frame """
