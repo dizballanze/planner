@@ -112,6 +112,32 @@ class TestPolygon(BaseTestCase):
         self.assertTrue(hasattr(self.polygon, 'hatch'))
         self.assertFalse(hasattr(self.polygon, 'filling'))
 
+    def test_is_point_on_line_not(self):
+        """
+        Test "is point lay on the line" help function with point not on the line
+        """
+        lp1 = (0, 0)
+        lp2 = (10, 10)
+        point = (5, 6)
+        self.assertFalse(self.polygon._is_point_on_line(lp1, lp2, point))
+        lp1 = (0, 0)
+        lp2 = (0, 10)
+        point = (0, 11)
+        self.assertFalse(self.polygon._is_point_on_line(lp1, lp2, point))
+        lp1 = (0, 0)
+        lp2 = (0, 10)
+        point = (0, -1)
+        self.assertFalse(self.polygon._is_point_on_line(lp1, lp2, point))
+
+    def test_is_point_on_line(self):
+        """
+        Test "is point lay on the line" help function with point on the line
+        """
+        lp1 = (0, 0)
+        lp2 = (10, 10)
+        point = (5, 5)
+        self.assertTrue(self.polygon._is_point_on_line(lp1, lp2, point))
+
 
 class TestRectFrame(BaseTestCase):
 
@@ -181,6 +207,68 @@ class TestRectFrame(BaseTestCase):
         self.rect_frame.add_filling(self.COLOR)
         svg_objects = self.rect_frame._draw()
         self.assertAttrib(svg_objects[0], 'fill', self.COLOR)
+
+    def test_add_aperture_coordinates_validation(self):
+        """
+        Test aperture coordinates validation
+        """
+        with self.assertRaisesRegex(ValueError, "not located on the wall border"):
+            self.rect_frame.add_aperture(0, 0, 50)
+
+    def test_add_aperture_with_correct_coordinates(self):
+        """
+        Test apperture with correct coordinates
+        """
+        try:
+            self.rect_frame.add_aperture(10, 50, 50)  # left
+            self.rect_frame.add_aperture(55, 20, 50)  # top
+            self.rect_frame.add_aperture(335, 60, 50)  # right
+            self.rect_frame.add_aperture(45, 245, 50)  # bottom
+        except ValueError as err:
+            self.fail('Should not throw any exceptions on correct coordinates and width. Error message: {}'.format(str(err)))
+
+    def test_wrong_width_validation(self):
+        """
+        Test validation of aperture with (should not exceed wall sizes)
+        """
+        # left
+        with self.assertRaisesRegex(ValueError, "width 250 exceed wall size"):
+            self.rect_frame.add_aperture(10, 50, 250)
+        # top
+        with self.assertRaisesRegex(ValueError, "width 350 exceed wall size"):
+            self.rect_frame.add_aperture(55, 20, 350)
+        # right
+        with self.assertRaisesRegex(ValueError, "width 250 exceed wall size"):
+            self.rect_frame.add_aperture(335, 60, 250)
+        # bottom
+        with self.assertRaisesRegex(ValueError, "width 350 exceed wall size"):
+            self.rect_frame.add_aperture(45, 245, 350)
+
+    def test_aperture_draw(self):
+        """
+        Test that added aperture correctly drawed
+        """
+        from svgwrite import shapes, mm
+        # left
+        self.rect_frame.add_aperture(10, 50, 50)
+        svg_objects = self.rect_frame._draw()
+        self.assertLength(svg_objects, 3)
+        aperture = svg_objects[2]
+        self.assertIsInstance(aperture, shapes.Rect)
+        self.assertAttrib(aperture, 'x', 10 * mm)
+        self.assertAttrib(aperture, 'y', 50 * mm)
+        self.assertAttrib(aperture, 'width', self.WALL_WIDTH * mm)
+        self.assertAttrib(aperture, 'height', 50 * mm)
+        # top
+        self.rect_frame.add_aperture(55, 20, 50)
+        svg_objects = self.rect_frame._draw()
+        self.assertLength(svg_objects, 4)
+        aperture = svg_objects[3]
+        self.assertIsInstance(aperture, shapes.Rect)
+        self.assertAttrib(aperture, 'x', 55 * mm)
+        self.assertAttrib(aperture, 'y', 20 * mm)
+        self.assertAttrib(aperture, 'width', 50 * mm)
+        self.assertAttrib(aperture, 'height', self.WALL_WIDTH * mm)
 
 
 class TestRect(BaseTestCase):
