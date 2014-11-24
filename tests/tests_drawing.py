@@ -31,8 +31,8 @@ class TestDrawing(BaseTestCase):
         """
         Test adding objects to drawing
         """
-        from planner.frame import Frame
-        frame = Frame()
+        from planner.frame import RectFrame
+        frame = RectFrame()
         self.drawing.add(frame)
         self.assertIn(frame, self.drawing.objects)
 
@@ -40,15 +40,12 @@ class TestDrawing(BaseTestCase):
         """
         Check that rendered code contained code of every drawing element
         """
-        from planner.frame import Frame
-        frame = Frame()
-        rect = frame.add_rect()
-        rect_frame = frame.add_rect_frame()
-        self.drawing.add(frame)
-        frame2 = Frame()
-        rect2 = frame2.add_rect(x=10, y=10)
-        self.drawing.add(frame2)
+        from planner.frame import RectFrame, Rect
+        rect = Rect()
+        rect_frame = RectFrame()
+        self.drawing.add(rect)
+        self.drawing.add(rect_frame)
         rendered = str(self.drawing)
-        for element in [rect, rect_frame, rect2]:
+        for element in [rect, rect_frame]:
             for shape in element._draw():
                 self.assertIn(shape.tostring(), rendered)

@@ -81,7 +81,7 @@ class Rect(Polygon):
 
     """ Rectangle representation """
 
-    def __init__(self, x, y, width, height, **attribs):
+    def __init__(self, x=0, y=0, width=1, height=1, **attribs):
         """
         x, y - coordinates of left top corner
         """
@@ -111,7 +111,7 @@ class RectFrame(Polygon):
 
     DEFAULT_PARAMS = {"stroke": "#000", "stroke-width": "2"}
 
-    def __init__(self, x, y, width, height, wall_width, **attribs):
+    def __init__(self, x=0, y=0, width=1, height=1, wall_width=1, **attribs):
         self.corner = (x * mm, y * mm)
         self.size = (width * mm, height * mm)
         self.inner_corner = ((x + wall_width) * mm, (y + wall_width) * mm)
@@ -216,28 +216,3 @@ class RectFrame(Polygon):
             self.apertures.append(dict(x=x, y=y, width=self.wall_width, height=width, attribs=attribs))
         elif border in ['top', 'bottom']:
             self.apertures.append(dict(x=x, y=y, width=width, height=self.wall_width, attribs=attribs))
-
-
-
-class Frame(object):
-
-    """
-    Frame representation class.
-    """
-
-    def __init__(self):
-        self._plines = []
-
-    def add_rect(self, x=0, y=0, width=1, height=1, **kwargs):
-        """ Add rectangle to the frame and return it """
-        rect = Rect(x, y, width, height, **kwargs)
-        self._plines.append(rect)
-        return rect
-
-    def add_rect_frame(self, x=0, y=0, width=1, height=1, wall_width=1, **kwargs):
-        rect_frame = RectFrame(x, y, width, height, wall_width, **kwargs)
-        self._plines.append(rect_frame)
-        return rect_frame
-
-    def _draw(self):
-        return self._plines

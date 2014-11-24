@@ -42,16 +42,15 @@ class Drawing(object):
     def __str__(self):
         draw = SVGDrawing(size=(self.size[0] * mm, self.size[1] * mm), profile='full')
         for obj in self.objects:
-            for pline in obj._draw():
-                drawed = pline._draw()
-                # pline can consists of several objects
-                if hasattr(drawed, '__iter__'):
-                    for obj in drawed:
-                        draw.add(obj)
-                else:
-                    draw.add(obj)
-                # pline can contain masks or clips
-                mask = pline._mask()
-                if mask:
-                    draw.defs.add(mask)
+            drawed = obj._draw()
+            # object can consists of several objects
+            if hasattr(drawed, '__iter__'):
+                for svg_obj in drawed:
+                    draw.add(svg_obj)
+            else:
+                draw.add(drawed)
+            # object can contain masks or clips
+            mask = obj._mask()
+            if mask:
+                draw.defs.add(mask)
         return draw.tostring()

@@ -1,37 +1,6 @@
 from tests import BaseTestCase
 
 
-class TestFrame(BaseTestCase):
-
-    """ Functional test of drawing frames with coordinates """
-
-    @classmethod
-    def setUpClass(cls):
-        from planner.frame import Frame
-        cls.Frame = Frame
-
-    def setUp(self):
-        self.frame = self.Frame()
-
-    def test_add_rect(self):
-        """
-        Should correctly add rectangle
-        """
-        self.frame.add_rect()
-        self.assertLength(self.frame._plines, 1)
-        from planner.frame import Rect
-        self.assertIsInstance(self.frame._plines[0], Rect)
-
-    def test_add_rect_frame(self):
-        """
-        Should correctly add rectangle frame
-        """
-        self.frame.add_rect_frame()
-        self.assertLength(self.frame._plines, 1)
-        from planner.frame import RectFrame
-        self.assertIsInstance(self.frame._plines[0], RectFrame)
-
-
 class TestPolygon(BaseTestCase):
 
     """ Test base class for all frames """
