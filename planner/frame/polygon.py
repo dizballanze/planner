@@ -58,7 +58,8 @@ class Polygon(object):
             del self.hatch
         self.filling = color
 
-    def _is_point_on_line(self, line_start, line_end, point):
+    @classmethod
+    def _is_point_on_line(cls, line_start, line_end, point):
         """
         Check that point is lay on the line
         """

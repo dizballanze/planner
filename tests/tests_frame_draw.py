@@ -210,16 +210,16 @@ class TestRectFrame(BaseTestCase):
         Test validation of aperture with (should not exceed wall sizes)
         """
         # left
-        with self.assertRaisesRegex(ValueError, "width 250 exceed wall size"):
+        with self.assertRaisesRegex(ValueError, "Aperture width exceed wall sizes"):
             self.rect_frame.add_aperture(10, 50, 250)
         # top
-        with self.assertRaisesRegex(ValueError, "width 350 exceed wall size"):
+        with self.assertRaisesRegex(ValueError, "Aperture width exceed wall sizes"):
             self.rect_frame.add_aperture(55, 20, 350)
         # right
-        with self.assertRaisesRegex(ValueError, "width 250 exceed wall size"):
+        with self.assertRaisesRegex(ValueError, "Aperture width exceed wall sizes"):
             self.rect_frame.add_aperture(335, 60, 250)
         # bottom
-        with self.assertRaisesRegex(ValueError, "width 350 exceed wall size"):
+        with self.assertRaisesRegex(ValueError, "Aperture width exceed wall sizes"):
             self.rect_frame.add_aperture(45, 245, 350)
 
     def test_aperture_draw(self):

@@ -1,4 +1,5 @@
 from planner.frame.polygon import Polygon
+from planner.frame.aperture import Aperture
 from svgwrite import shapes, mm
 
 
@@ -41,22 +42,10 @@ class RectFrame(Polygon):
         res.append(rect)
         res.append(inner_rect)
         # Apertures
-        apertures = self._draw_apertures()
-        if apertures:
-            res = res + apertures
+        if self.apertures:
+            for aperture in self.apertures:
+                res.append(aperture._draw())
         return res
-
-    def _draw_apertures(self):
-        """
-        Draw apertures
-        """
-        elements = []
-        for aperture in self.apertures:
-            attribs = {"stroke": "#000", "stroke-width": "2", "fill": "#fff"}
-            attribs.update(aperture['attribs'])
-            elements.append(
-                shapes.Rect((aperture['x'] * mm, aperture['y'] * mm), (aperture['width'] * mm, aperture['height'] * mm), **attribs))
-        return elements
 
     def _get_aperture_lines_coordinates(self):
         outer_lines = []
@@ -98,18 +87,7 @@ class RectFrame(Polygon):
         """
         outer_lines = self._get_aperture_lines_coordinates()
         coords = (x, y)
-        # Validate corner coordinates (should be correct left-top corner of door and lay on wall border)
-        if not self._is_point_on_lines(outer_lines, coords):
+        aperture = Aperture.match_wall_and_create(coords, width, outer_lines, self.wall_width)
+        if not aperture:
             raise ValueError("Coordinates {}, {} of aparture left corner not located on the wall border".format(x, y))
-        # Validate aperture width
-        border = self._get_border_name_by_point(outer_lines, coords)
-        if border in ['left', 'right']:
-            aperture_end_coords = (x, y + width)
-        if border in ['top', 'bottom']:
-            aperture_end_coords = (x + width, y)
-        if not self._is_point_on_lines(outer_lines, aperture_end_coords):
-            raise ValueError("Specified width {} exceed wall sizes".format(width))
-        if border in ['left', 'right']:
-            self.apertures.append(dict(x=x, y=y, width=self.wall_width, height=width, attribs=attribs))
-        elif border in ['top', 'bottom']:
-            self.apertures.append(dict(x=x, y=y, width=width, height=self.wall_width, attribs=attribs))
+        self.apertures.append(aperture)
