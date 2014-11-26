@@ -1,5 +1,6 @@
 from planner.frame.polygon import Polygon
 from planner.frame.aperture import Aperture
+from planner.frame.bulkhead import Bulkhead
 from svgwrite import shapes, mm
 
 
@@ -21,6 +22,7 @@ class RectFrame(Polygon):
         self.wall_width = wall_width
         self.attribs = attribs or dict()
         self.apertures = []
+        self.bulkheads = []
 
     def _draw(self):
         rect_params = self.DEFAULT_PARAMS.copy()
@@ -45,6 +47,10 @@ class RectFrame(Polygon):
         if self.apertures:
             for aperture in self.apertures:
                 res.append(aperture._draw())
+        # Bulkheads
+        if self.bulkheads:
+            for bulkhead in self.bulkheads:
+                res.append(bulkhead._draw())
         return res
 
     def _get_aperture_lines_coordinates(self):
@@ -78,3 +84,24 @@ class RectFrame(Polygon):
             raise ValueError("Coordinates {}, {} of aparture left corner not located on the wall border".format(x, y))
         self.apertures.append(aperture)
         return aperture
+
+    def add_bulkhead(self, x, y, width, **attribs):
+        """
+        Add bulkhead to current frame,
+        x, y - should be coordinates of left-top corner and lay on left or top inner wall border
+        """
+        top_left_corner = (self.x + self.wall_width, self.y + self.wall_width)
+        bottom_left_corner = (self.x + self.wall_width, self.y + self.height - 2 * self.wall_width)
+        top_right_corner = (self.x + self.width - 2 * self.wall_width, self.y + self.wall_width)
+        # horizontal
+        if self._is_point_on_line(top_left_corner, bottom_left_corner, (x, y)):
+            end_point = (x + self.width - 2 * self.wall_width, y + width)
+        # vertical
+        elif self._is_point_on_line(top_left_corner, top_right_corner, (x, y)):
+            end_point = (x + width, y + self.height - 2 * self.wall_width)
+        # error
+        else:
+            raise ValueError('Wrong coordinates, left-top corner should lay on left or top inner wall border')
+        bulkhead = Bulkhead((x, y), end_point, **attribs)
+        self.bulkheads.append(bulkhead)
+        return bulkhead

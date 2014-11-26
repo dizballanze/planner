@@ -21,6 +21,6 @@ class Bulkhead(Polygon):
         self.attribs = attribs
 
     def _draw(self):
-        rect_params = {"stroke": "#000", "stroke-width": "2"}
+        rect_params = {"stroke": "#000", "stroke-width": "2", "fill": "#fff"}
         rect_params.update(self.attribs)
         return shapes.Rect((self.x * mm, self.y * mm), (self.width * mm, self.height * mm), **rect_params)

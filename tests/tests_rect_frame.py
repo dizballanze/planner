@@ -131,3 +131,51 @@ class TestRectFrame(BaseTestCase):
         self.assertAttrib(aperture, 'y', 20 * mm)
         self.assertAttrib(aperture, 'width', 50 * mm)
         self.assertAttrib(aperture, 'height', self.WALL_WIDTH * mm)
+
+    def test_add_horizontal_bulkhead(self):
+        """
+        Test adding horizontal bulkhead to the frame
+        """
+        from planner.frame.bulkhead import Bulkhead
+        bulkhead = self.rect_frame.add_bulkhead(35, 70, 30)
+        self.assertIsInstance(bulkhead, Bulkhead)
+        self.assertLength(self.rect_frame.bulkheads, 1)
+        self.assertEqual(bulkhead, self.rect_frame.bulkheads[0])
+        self.assertEqual(bulkhead.x, 35)
+        self.assertEqual(bulkhead.y, 70)
+        self.assertEqual(bulkhead.width, self.SIZES[0] - 2 * self.WALL_WIDTH)
+        self.assertEqual(bulkhead.height, 30)
+
+    def test_add_vertical_bulkhead(self):
+        """
+        Test adding vertical bulkhead to frame
+        """
+        from planner.frame.bulkhead import Bulkhead
+        bulkhead = self.rect_frame.add_bulkhead(70, 45, 30)
+        self.assertIsInstance(bulkhead, Bulkhead)
+        self.assertLength(self.rect_frame.bulkheads, 1)
+        self.assertEqual(bulkhead, self.rect_frame.bulkheads[0])
+        self.assertEqual(bulkhead.x, 70)
+        self.assertEqual(bulkhead.y, 45)
+        self.assertEqual(bulkhead.width, 30)
+        self.assertEqual(bulkhead.height, self.SIZES[1] - 2 * self.WALL_WIDTH)
+
+    def test_add_wrong_coordinates_bulkhead(self):
+        """
+        Should raise exception if top-left corner not lay on left or right top inner wall border
+        """
+        with self.assertRaisesRegex(ValueError, 'left-top corner should lay on left or top inner wall border'):
+            self.rect_frame.add_bulkhead(10, 10, 30)
+
+    def test_draw_bulkhead(self):
+        """
+        Should draw all added bulkheads
+        """
+        bulkhead1 = self.rect_frame.add_bulkhead(70, 45, 30)
+        bulkhead2 = self.rect_frame.add_bulkhead(35, 70, 30)
+        from planner.drawing import Drawing
+        drawing = Drawing()
+        drawing.add(self.rect_frame)
+        drawed = str(drawing)
+        self.assertIn(bulkhead1._draw().tostring(), drawed)
+        self.assertIn(bulkhead2._draw().tostring(), drawed)
