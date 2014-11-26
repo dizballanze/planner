@@ -63,20 +63,6 @@ class RectFrame(Polygon):
             (self.x + self.width - self.wall_width, self.y + self.height - self.wall_width)))
         return outer_lines
 
-    def _get_border_name_by_point(self, lines, point):
-        """
-        Get border name (left, top, right, bottom) on which point located
-        """
-        if self._is_point_on_line(lines[0][0], lines[0][1], point):
-            return 'left'
-        if self._is_point_on_line(lines[1][0], lines[1][1], point):
-            return 'top'
-        if self._is_point_on_line(lines[2][0], lines[2][1], point):
-            return 'right'
-        if self._is_point_on_line(lines[3][0], lines[3][1], point):
-            return 'bottom'
-        return False
-
     def _is_point_on_lines(self, lines, point):
         return any([self._is_point_on_line(p[0], p[1], point) for p in lines])
 
@@ -91,3 +77,4 @@ class RectFrame(Polygon):
         if not aperture:
             raise ValueError("Coordinates {}, {} of aparture left corner not located on the wall border".format(x, y))
         self.apertures.append(aperture)
+        return aperture
