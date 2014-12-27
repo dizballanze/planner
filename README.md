@@ -9,4 +9,4 @@ Python package for drawing 2d plans of a buildings.
 -  [ ] Python 2.x support
 -  [ ] validate overlapping apertures
 -  [ ] add hatching to bulkheads
--  [ ] bulkhead intersection processing
+-  [x] bulkhead intersection processing
