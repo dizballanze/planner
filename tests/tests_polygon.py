@@ -49,7 +49,7 @@ class TestPolygon(BaseTestCase):
         # Check inner elements
         self.assertLength(hatch.elements, 4)
         self.assertStyle(hatch.elements[1], 'stroke', self.COLOR)
-        self.assertStyle(hatch.elements[1], 'width', self.WIDTH * mm)
+        self.assertStyle(hatch.elements[1], 'stroke-width', self.WIDTH * mm)
 
     def test_hatching_id(self):
         """
