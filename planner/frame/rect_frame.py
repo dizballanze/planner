@@ -56,9 +56,9 @@ class RectFrame(Polygon):
         backgrounds = []
         if self.bulkheads:
             for bulkhead in self.bulkheads:
-                border, background = bulkhead._draw()
+                border, *background = bulkhead._draw()
                 borders.append(border)
-                backgrounds.append(background)
+                backgrounds.extend(background)
         res.extend(borders)
         res.extend(backgrounds)
         return res

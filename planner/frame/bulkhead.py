@@ -29,6 +29,7 @@ class Bulkhead(Polygon):
         border_params.update(self.attribs)
         border_params['fill'] = '#fff'  # For border stroke background should be white
         border = shapes.Rect((self.x * mm, self.y * mm), (self.width * mm, self.height * mm), **border_params)
+        res = [border]
         # Prepare background
         stroke_width = border_params.get('stroke-width')
         value, unit = parse_measure_units(stroke_width)
@@ -36,7 +37,17 @@ class Bulkhead(Polygon):
         bg_params.update(self.attribs)
         del bg_params['stroke-width']
         del bg_params['stroke']
+        # Hatching and filling
+        if hasattr(self, "hatch") and self.hatch:
+            bg_params['style'] = "fill: url(#{})".format(self._hatching_id)
+            res.append(self.hatch)
+        if hasattr(self, "filling"):
+            bg_params['fill'] = self.filling
+        else:
+            if 'fill' not in bg_params:
+                bg_params['fill'] = "#fff"
         background = shapes.Rect(
             ((self.x + float(value) / 2) * mm, (self.y + float(value) / 2) * mm),
             ((self.width - value) * mm, (self.height - value) * mm), **bg_params)
-        return [border, background]
+        res.append(background)
+        return res

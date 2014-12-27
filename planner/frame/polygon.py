@@ -35,7 +35,7 @@ class Polygon(object):
         if hasattr(self, "filling"):
             del self.filling
         angle = math.radians(angle)
-        style = "stroke: {color}; width: {width}".format(color=color, width=width * mm)
+        style = "stroke: {color}; stroke-width: {width}".format(color=color, width=width * mm)
         pattern_width = distance / math.sin(angle)
         pattern_height = pattern_width * math.tan(angle)
         self.hatch = pattern.Pattern(
