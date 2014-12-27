@@ -1,6 +1,8 @@
 planner
 =======
 
+![Building status](http://ci.wbtech.pro/dizballanze/planner/badge/)
+
 Python package for drawing 2d plans of a buildings.
 
 ## TODO:
