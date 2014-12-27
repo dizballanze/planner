@@ -1,5 +1,6 @@
 from planner.frame.polygon import Polygon
 from svgwrite import shapes, mm
+from planner.tools import parse_measure_units
 
 
 class Bulkhead(Polygon):
@@ -8,6 +9,8 @@ class Bulkhead(Polygon):
     Inner walls representation.
     Only horizontal and vertical bulkheads supported for now.
     """
+
+    DEFAULT_PARAMS = {"stroke": "#000", "stroke-width": "2mm", "fill": "#fff"}
 
     def __init__(self, left_top_point, right_bottom_point, **attribs):
         """
@@ -21,6 +24,19 @@ class Bulkhead(Polygon):
         self.attribs = attribs
 
     def _draw(self):
-        rect_params = {"stroke": "#000", "stroke-width": "2", "fill": "#fff"}
-        rect_params.update(self.attribs)
-        return shapes.Rect((self.x * mm, self.y * mm), (self.width * mm, self.height * mm), **rect_params)
+        # Prepare border
+        border_params = self.DEFAULT_PARAMS.copy()
+        border_params.update(self.attribs)
+        border_params['fill'] = '#fff'  # For border stroke background should be white
+        border = shapes.Rect((self.x * mm, self.y * mm), (self.width * mm, self.height * mm), **border_params)
+        # Prepare background
+        stroke_width = border_params.get('stroke-width')
+        value, unit = parse_measure_units(stroke_width)
+        bg_params = self.DEFAULT_PARAMS.copy()
+        bg_params.update(self.attribs)
+        del bg_params['stroke-width']
+        del bg_params['stroke']
+        background = shapes.Rect(
+            ((self.x + float(value) / 2) * mm, (self.y + float(value) / 2) * mm),
+            ((self.width - value) * mm, (self.height - value) * mm), **bg_params)
+        return [border, background]

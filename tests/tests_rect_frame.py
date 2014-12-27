@@ -87,7 +87,8 @@ class TestRectFrame(BaseTestCase):
             self.rect_frame.add_aperture(335, 60, 50)  # right
             self.rect_frame.add_aperture(45, 245, 50)  # bottom
         except ValueError as err:
-            self.fail('Should not throw any exceptions on correct coordinates and width. Error message: {}'.format(str(err)))
+            self.fail(
+                'Should not throw any exceptions on correct coordinates and width. Error message: {}'.format(str(err)))
 
     def test_wrong_width_validation(self):
         """
@@ -177,5 +178,7 @@ class TestRectFrame(BaseTestCase):
         drawing = Drawing()
         drawing.add(self.rect_frame)
         drawed = str(drawing)
-        self.assertIn(bulkhead1._draw().tostring(), drawed)
-        self.assertIn(bulkhead2._draw().tostring(), drawed)
+        self.assertIn(bulkhead1._draw()[0].tostring(), drawed)
+        self.assertIn(bulkhead1._draw()[1].tostring(), drawed)
+        self.assertIn(bulkhead2._draw()[0].tostring(), drawed)
+        self.assertIn(bulkhead2._draw()[1].tostring(), drawed)

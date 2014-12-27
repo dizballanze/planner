@@ -33,10 +33,18 @@ class TestBulkhead(BaseTestCase):
         Test bulkhead drawing
         """
         from svgwrite import shapes, mm
-        rect = self.bulkhead._draw()
-        self.assertIsInstance(rect, shapes.Rect)
-        self.assertAttrib(rect, 'x', self.LEFT_TOP[0] * mm)
-        self.assertAttrib(rect, 'y', self.LEFT_TOP[1] * mm)
-        self.assertAttrib(rect, 'width', self.bulkhead.width * mm)
-        self.assertAttrib(rect, 'height', self.bulkhead.height * mm)
-        self.assertAttrib(rect, 'fill', '#6F6')
+        rect_border, rect_bg = self.bulkhead._draw()
+        # Test border rect
+        self.assertIsInstance(rect_border, shapes.Rect)
+        self.assertAttrib(rect_border, 'x', self.LEFT_TOP[0] * mm)
+        self.assertAttrib(rect_border, 'y', self.LEFT_TOP[1] * mm)
+        self.assertAttrib(rect_border, 'width', self.bulkhead.width * mm)
+        self.assertAttrib(rect_border, 'height', self.bulkhead.height * mm)
+        self.assertAttrib(rect_border, 'fill', '#fff')  # border rect should be white
+        # Test background rect
+        self.assertIsInstance(rect_bg, shapes.Rect)
+        self.assertAttrib(rect_bg, 'x', float(self.LEFT_TOP[0] + 1) * mm)
+        self.assertAttrib(rect_bg, 'y', float(self.LEFT_TOP[1] + 1) * mm)
+        self.assertAttrib(rect_bg, 'width', (self.bulkhead.width - 2) * mm)
+        self.assertAttrib(rect_bg, 'height', (self.bulkhead.height - 2) * mm)
+        self.assertAttrib(rect_bg, 'fill', '#6F6')

@@ -16,9 +16,10 @@ class Aperture(Polygon):
         wall_start_point, wall_end_point - coordinates of wall border
         """
         if not self._is_point_on_line(wall_start_point, wall_end_point, start_point):
-            raise ValueError("Coordinates {}, {} of aperture left corner not located on the wall border".format(x, y))
+            raise ValueError(
+                "Coordinates {}, {} of aperture left corner not located on the wall border".format(*start_point))
         if not self._is_point_on_line(wall_start_point, wall_end_point, (start_point[0] + width, start_point[1])) \
-            and not self._is_point_on_line(wall_start_point, wall_end_point, (start_point[0], start_point[1] + width)):
+           and not self._is_point_on_line(wall_start_point, wall_end_point, (start_point[0], start_point[1] + width)):
             raise ValueError("Aperture width exceed wall sizes")
         self.start_point = start_point
         self.width = width
@@ -28,7 +29,7 @@ class Aperture(Polygon):
         self.attribs = attribs
 
     def _draw(self):
-        attribs = {"stroke": "#000", "stroke-width": "2", "fill": "#fff"}
+        attribs = {"stroke": "#000", "stroke-width": "2mm", "fill": "#fff"}
         attribs.update(self.attribs)
         # vertical (x coordinates equal)
         if self.wall_start_point[0] == self.wall_end_point[0]:

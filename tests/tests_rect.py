@@ -4,7 +4,7 @@ from tests import BaseTestCase
 class TestRect(BaseTestCase):
 
     """ Test rectangle shape """
-    
+
     # Constructor params
     CORNER = (10, 20)  # Corner coordinates
     SIZES = (350, 250)  # Sizes (WIDTH x HEIGHT)

@@ -8,7 +8,7 @@ class RectFrame(Polygon):
 
     """ Rectangle frame representation """
 
-    DEFAULT_PARAMS = {"stroke": "#000", "stroke-width": "2"}
+    DEFAULT_PARAMS = {"stroke": "#000", "stroke-width": "2mm"}
 
     def __init__(self, x=0, y=0, width=1, height=1, wall_width=1, **attribs):
         self.corner = (x * mm, y * mm)
@@ -23,6 +23,7 @@ class RectFrame(Polygon):
         self.attribs = attribs or dict()
         self.apertures = []
         self.bulkheads = []
+        self.stroke_width = attribs.get('stroke-width') or self.DEFAULT_PARAMS.get('stroke-width')
 
     def _draw(self):
         rect_params = self.DEFAULT_PARAMS.copy()
@@ -39,8 +40,11 @@ class RectFrame(Polygon):
                 rect_params['fill'] = "#fff"
         # Create outer and inner rects
         rect = shapes.Rect(self.corner, self.size, **rect_params)
+        inner_params = self.DEFAULT_PARAMS.copy()
+        inner_params.update(self.attribs)
+        inner_params['fill'] = "#fff"
         inner_rect = shapes.Rect(
-            self.inner_corner, self.inner_size, **{"stroke": "#000", "stroke-width": "2", "fill": "#fff"})
+            self.inner_corner, self.inner_size, **inner_params)
         res.append(rect)
         res.append(inner_rect)
         # Apertures
@@ -48,9 +52,15 @@ class RectFrame(Polygon):
             for aperture in self.apertures:
                 res.append(aperture._draw())
         # Bulkheads
+        borders = []
+        backgrounds = []
         if self.bulkheads:
             for bulkhead in self.bulkheads:
-                res.append(bulkhead._draw())
+                border, background = bulkhead._draw()
+                borders.append(border)
+                backgrounds.append(background)
+        res.extend(borders)
+        res.extend(backgrounds)
         return res
 
     def _get_aperture_lines_coordinates(self):
@@ -79,7 +89,10 @@ class RectFrame(Polygon):
         """
         outer_lines = self._get_aperture_lines_coordinates()
         coords = (x, y)
-        aperture = Aperture.match_wall_and_create(coords, width, outer_lines, self.wall_width)
+        # Propagate stroke-width
+        if 'stroke-width' not in attribs:
+            attribs['stroke-width'] = self.stroke_width
+        aperture = Aperture.match_wall_and_create(coords, width, outer_lines, self.wall_width, **attribs)
         if not aperture:
             raise ValueError("Coordinates {}, {} of aparture left corner not located on the wall border".format(x, y))
         self.apertures.append(aperture)
@@ -102,6 +115,9 @@ class RectFrame(Polygon):
         # error
         else:
             raise ValueError('Wrong coordinates, left-top corner should lay on left or top inner wall border')
+        # Propagate stroke-width
+        if 'stroke-width' not in attribs:
+            attribs['stroke-width'] = self.stroke_width
         bulkhead = Bulkhead((x, y), end_point, **attribs)
         self.bulkheads.append(bulkhead)
         return bulkhead

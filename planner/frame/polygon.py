@@ -63,10 +63,12 @@ class Polygon(object):
         """
         Check that point is lay on the line
         """
-        crossproduct = (point[1] - line_start[1]) * (line_end[0] - line_start[0]) - (point[0] - line_start[0]) * (line_end[1] - line_start[1])
+        crossproduct = ((point[1] - line_start[1]) * (line_end[0] - line_start[0]) -
+                        (point[0] - line_start[0]) * (line_end[1] - line_start[1]))
         if abs(crossproduct) > sys.float_info.epsilon:
             return False
-        dotproduct = (point[0] - line_start[0]) * (line_end[0] - line_start[0]) + (point[1] - line_start[1]) * (line_end[1] - line_start[1])
+        dotproduct = ((point[0] - line_start[0]) * (line_end[0] - line_start[0]) +
+                      (point[1] - line_start[1]) * (line_end[1] - line_start[1]))
         if dotproduct < 0:
             return False
         squaredlength = pow(line_end[0] - line_start[0], 2) + pow(line_end[1] - line_start[1], 2)
