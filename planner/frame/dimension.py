@@ -44,10 +44,12 @@ class BaseDimension(object):
         xp = middle_point[0] + 1  # arbitrary selected x coord for perpendicular line
         yp = kp * (xp - middle_point[0]) + middle_point[1]
         directing_vector_p = (middle_point[0] - xp, middle_point[1] - yp)
-        line_length_p = ((middle_point[0] - xp) ** 2  + (middle_point[1] - yp) ** 2) ** 0.5
+        line_length_p = ((middle_point[0] - xp) ** 2 + (middle_point[1] - yp) ** 2) ** 0.5
         unit_vector_p = (directing_vector_p[0] / line_length_p, directing_vector_p[1] / line_length_p)
-        tail1 = (middle_point[0] + unit_vector_p[0] * self.ARROW_WIDTH, middle_point[1] + unit_vector_p[1] * self.ARROW_WIDTH)
-        tail2 = (middle_point[0] - unit_vector_p[0] * self.ARROW_WIDTH, middle_point[1] - unit_vector_p[1] * self.ARROW_WIDTH)
+        tail1 = (middle_point[0] + unit_vector_p[0] * self.ARROW_WIDTH,
+                 middle_point[1] + unit_vector_p[1] * self.ARROW_WIDTH)
+        tail2 = (middle_point[0] - unit_vector_p[0] * self.ARROW_WIDTH,
+                 middle_point[1] - unit_vector_p[1] * self.ARROW_WIDTH)
         attribs_merged = self.DEFAULT_ARROW_ATTRIBS
         attribs_merged.update(attribs)
         return shapes.Polygon([start_point, tail1, tail2, start_point], **attribs_merged)
