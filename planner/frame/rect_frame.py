@@ -1,20 +1,20 @@
 from planner.frame.polygon import Polygon
 from planner.frame.aperture import Aperture
 from planner.frame.bulkhead import Bulkhead
-from svgwrite import shapes, mm
+from svgwrite import shapes
 
 
 class RectFrame(Polygon):
 
     """ Rectangle frame representation """
 
-    DEFAULT_PARAMS = {"stroke": "#000", "stroke-width": "2mm"}
+    DEFAULT_PARAMS = {"stroke": "#000", "stroke-width": "2"}
 
     def __init__(self, x=0, y=0, width=1, height=1, wall_width=1, **attribs):
-        self.corner = (x * mm, y * mm)
-        self.size = (width * mm, height * mm)
-        self.inner_corner = ((x + wall_width) * mm, (y + wall_width) * mm)
-        self.inner_size = ((width - 2 * wall_width) * mm, (height - 2 * wall_width) * mm)
+        self.corner = (x, y)
+        self.size = (width, height)
+        self.inner_corner = (x + wall_width, y + wall_width)
+        self.inner_size = (width - 2 * wall_width, height - 2 * wall_width)
         self.x = x
         self.y = y
         self.width = width

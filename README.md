@@ -7,6 +7,7 @@ Python package for drawing 2d plans of a buildings.
 
 ## TODO:
 
+-  [ ] Size autodetection (using scales)
 -  [ ] Improve tests
 -  [ ] Python 2.x support
 -  [ ] validate overlapping apertures

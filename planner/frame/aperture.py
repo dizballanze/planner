@@ -1,5 +1,5 @@
 from planner.frame.polygon import Polygon
-from svgwrite import shapes, mm
+from svgwrite import shapes
 
 
 class Aperture(Polygon):
@@ -29,7 +29,7 @@ class Aperture(Polygon):
         self.attribs = attribs
 
     def _draw(self):
-        attribs = {"stroke": "#000", "stroke-width": "2mm", "fill": "#fff"}
+        attribs = {"stroke": "#000", "stroke-width": "2", "fill": "#fff"}
         attribs.update(self.attribs)
         # vertical (x coordinates equal)
         if self.wall_start_point[0] == self.wall_end_point[0]:
@@ -39,7 +39,7 @@ class Aperture(Polygon):
         else:
             width = self.width
             height = self.wall_width
-        return shapes.Rect((self.start_point[0] * mm, self.start_point[1] * mm), (width * mm, height * mm), **attribs)
+        return shapes.Rect((self.start_point[0], self.start_point[1]), (width, height), **attribs)
 
     @classmethod
     def match_wall_and_create(cls, start_point, width, walls, wall_width, **attribs):

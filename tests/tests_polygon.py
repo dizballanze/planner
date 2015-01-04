@@ -33,23 +33,23 @@ class TestPolygon(BaseTestCase):
         """
         Test hatching pattern svg elements
         """
-        from svgwrite import pattern, mm
+        from svgwrite import pattern
         import math
         # Check pattern element
         self.polygon.add_hatching(self.ANGLE, self.DISTANCE, self.WIDTH, self.COLOR)
         hatch = self.polygon.hatch
         self.assertIsInstance(hatch, pattern.Pattern)
-        self.assertAttrib(hatch, 'x', 0 * mm)
-        self.assertAttrib(hatch, 'y', 0 * mm)
+        self.assertAttrib(hatch, 'x', 0)
+        self.assertAttrib(hatch, 'y', 0)
         width = (self.DISTANCE / math.sin(math.radians(self.ANGLE)))
-        self.assertAttrib(hatch, 'width', width * mm)
+        self.assertAttrib(hatch, 'width', width)
         height = width * math.tan(math.radians(self.ANGLE))
-        self.assertAttrib(hatch, 'height', height * mm)
+        self.assertAttrib(hatch, 'height', height)
         self.assertAttrib(hatch, 'id', self.polygon._hatching_id)
         # Check inner elements
         self.assertLength(hatch.elements, 4)
         self.assertStyle(hatch.elements[1], 'stroke', self.COLOR)
-        self.assertStyle(hatch.elements[1], 'stroke-width', self.WIDTH * mm)
+        self.assertStyle(hatch.elements[1], 'stroke-width', str(self.WIDTH))
 
     def test_hatching_id(self):
         """

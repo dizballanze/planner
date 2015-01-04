@@ -1,4 +1,4 @@
-from svgwrite import shapes, mm, pattern
+from svgwrite import shapes, pattern
 from shortuuid import uuid
 import math
 import sys
@@ -35,18 +35,18 @@ class Polygon(object):
         if hasattr(self, "filling"):
             del self.filling
         angle = math.radians(angle)
-        style = "stroke: {color}; stroke-width: {width}".format(color=color, width=width * mm)
+        style = "stroke: {color}; stroke-width: {width}".format(color=color, width=width)
         pattern_width = distance / math.sin(angle)
         pattern_height = pattern_width * math.tan(angle)
         self.hatch = pattern.Pattern(
-            (0 * mm, 0 * mm),
-            (pattern_width * mm, pattern_height * mm), id=self._hatching_id, patternUnits="userSpaceOnUse")
-        self.hatch.add(shapes.Rect((0 * mm, 0 * mm), (pattern_width * mm, pattern_height * mm), fill="#fff"))
-        self.hatch.add(shapes.Line((0 * mm, 0 * mm), (pattern_width * mm, pattern_height * mm), style=style))
+            (0, 0),
+            (pattern_width, pattern_height), id=self._hatching_id, patternUnits="userSpaceOnUse")
+        self.hatch.add(shapes.Rect((0, 0), (pattern_width, pattern_height), fill="#fff"))
+        self.hatch.add(shapes.Line((0, 0), (pattern_width, pattern_height), style=style))
         self.hatch.add(
-            shapes.Line((-1 * mm, (pattern_height - 1) * mm), (1 * mm, (pattern_height + 1) * mm), style=style))
+            shapes.Line((-1, (pattern_height - 1)), (1, (pattern_height + 1)), style=style))
         self.hatch.add(
-            shapes.Line(((pattern_width - 1) * mm, -1 * mm), ((pattern_width + 1) * mm, 1 * mm), style=style))
+            shapes.Line(((pattern_width - 1), -1), ((pattern_width + 1), 1), style=style))
         return self.hatch
 
     def add_filling(self, color):

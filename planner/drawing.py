@@ -40,7 +40,7 @@ class Drawing(object):
         self.objects.append(obj)
 
     def __str__(self):
-        draw = SVGDrawing(size=(self.size[0] * mm, self.size[1] * mm), profile='full')
+        draw = SVGDrawing(size=(self.size[0] * mm, self.size[1] * mm), profile='full', viewBox="0 0 {} {}".format(self.size[0], self.size[1]))
         for obj in self.objects:
             drawed = obj._draw()
             # object can consists of several objects

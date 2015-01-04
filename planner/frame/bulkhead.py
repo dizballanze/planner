@@ -1,5 +1,5 @@
 from planner.frame.polygon import Polygon
-from svgwrite import shapes, mm
+from svgwrite import shapes
 from planner.tools import parse_measure_units
 
 
@@ -10,7 +10,7 @@ class Bulkhead(Polygon):
     Only horizontal and vertical bulkheads supported for now.
     """
 
-    DEFAULT_PARAMS = {"stroke": "#000", "stroke-width": "2mm", "fill": "#fff"}
+    DEFAULT_PARAMS = {"stroke": "#000", "stroke-width": "2", "fill": "#fff"}
 
     def __init__(self, left_top_point, right_bottom_point, **attribs):
         """
@@ -28,7 +28,7 @@ class Bulkhead(Polygon):
         border_params = self.DEFAULT_PARAMS.copy()
         border_params.update(self.attribs)
         border_params['fill'] = '#fff'  # For border stroke background should be white
-        border = shapes.Rect((self.x * mm, self.y * mm), (self.width * mm, self.height * mm), **border_params)
+        border = shapes.Rect((self.x, self.y), (self.width, self.height), **border_params)
         res = [border]
         # Prepare background
         stroke_width = border_params.get('stroke-width')
@@ -47,7 +47,7 @@ class Bulkhead(Polygon):
             if 'fill' not in bg_params:
                 bg_params['fill'] = "#fff"
         background = shapes.Rect(
-            ((self.x + float(value) / 2) * mm, (self.y + float(value) / 2) * mm),
-            ((self.width - value) * mm, (self.height - value) * mm), **bg_params)
+            (self.x + float(value) / 2, self.y + float(value) / 2),
+            (self.width - value, self.height - value), **bg_params)
         res.append(background)
         return res

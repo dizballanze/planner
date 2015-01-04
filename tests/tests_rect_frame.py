@@ -28,18 +28,18 @@ class TestRectFrame(BaseTestCase):
         svg_objects = self.rect_frame._draw()
         self.assertLength(svg_objects, 2)
         outer, inner = svg_objects
-        from svgwrite import shapes, mm
+        from svgwrite import shapes
         self.assertIsInstance(outer, shapes.Rect)
         self.assertIsInstance(inner, shapes.Rect)
         # Check sizes and coordinates
-        self.assertAttrib(outer, 'x', self.CORNER[0] * mm)
-        self.assertAttrib(outer, 'y', self.CORNER[1] * mm)
-        self.assertAttrib(outer, 'width', self.SIZES[0] * mm)
-        self.assertAttrib(outer, 'height', self.SIZES[1] * mm)
-        self.assertAttrib(inner, 'x', (self.CORNER[0] + self.WALL_WIDTH) * mm)
-        self.assertAttrib(inner, 'y', (self.CORNER[1] + self.WALL_WIDTH) * mm)
-        self.assertAttrib(inner, 'width', (self.SIZES[0] - 2 * self.WALL_WIDTH) * mm)
-        self.assertAttrib(inner, 'height', (self.SIZES[1] - 2 * self.WALL_WIDTH) * mm)
+        self.assertAttrib(outer, 'x', self.CORNER[0])
+        self.assertAttrib(outer, 'y', self.CORNER[1])
+        self.assertAttrib(outer, 'width', self.SIZES[0])
+        self.assertAttrib(outer, 'height', self.SIZES[1])
+        self.assertAttrib(inner, 'x', (self.CORNER[0] + self.WALL_WIDTH))
+        self.assertAttrib(inner, 'y', (self.CORNER[1] + self.WALL_WIDTH))
+        self.assertAttrib(inner, 'width', (self.SIZES[0] - 2 * self.WALL_WIDTH))
+        self.assertAttrib(inner, 'height', (self.SIZES[1] - 2 * self.WALL_WIDTH))
 
     def test_additional_attribs(self):
         """
@@ -111,27 +111,27 @@ class TestRectFrame(BaseTestCase):
         """
         Test that added aperture correctly drawed
         """
-        from svgwrite import shapes, mm
+        from svgwrite import shapes
         # left
         self.rect_frame.add_aperture(10, 50, 50)
         svg_objects = self.rect_frame._draw()
         self.assertLength(svg_objects, 3)
         aperture = svg_objects[2]
         self.assertIsInstance(aperture, shapes.Rect)
-        self.assertAttrib(aperture, 'x', 10 * mm)
-        self.assertAttrib(aperture, 'y', 50 * mm)
-        self.assertAttrib(aperture, 'width', self.WALL_WIDTH * mm)
-        self.assertAttrib(aperture, 'height', 50 * mm)
+        self.assertAttrib(aperture, 'x', 10)
+        self.assertAttrib(aperture, 'y', 50)
+        self.assertAttrib(aperture, 'width', self.WALL_WIDTH)
+        self.assertAttrib(aperture, 'height', 50)
         # top
         self.rect_frame.add_aperture(55, 20, 50)
         svg_objects = self.rect_frame._draw()
         self.assertLength(svg_objects, 4)
         aperture = svg_objects[3]
         self.assertIsInstance(aperture, shapes.Rect)
-        self.assertAttrib(aperture, 'x', 55 * mm)
-        self.assertAttrib(aperture, 'y', 20 * mm)
-        self.assertAttrib(aperture, 'width', 50 * mm)
-        self.assertAttrib(aperture, 'height', self.WALL_WIDTH * mm)
+        self.assertAttrib(aperture, 'x', 55)
+        self.assertAttrib(aperture, 'y', 20)
+        self.assertAttrib(aperture, 'width', 50)
+        self.assertAttrib(aperture, 'height', self.WALL_WIDTH)
 
     def test_add_horizontal_bulkhead(self):
         """

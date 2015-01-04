@@ -1,5 +1,5 @@
 from planner.frame.polygon import Polygon
-from svgwrite import shapes, mm
+from svgwrite import shapes
 
 
 class Rect(Polygon):
@@ -10,8 +10,8 @@ class Rect(Polygon):
         """
         x, y - coordinates of left top corner
         """
-        self.corner = (x * mm, y * mm)
-        self.size = (width * mm, height * mm)
+        self.corner = (x, y)
+        self.size = (width, height)
         self.attribs = attribs
 
     def _draw(self):

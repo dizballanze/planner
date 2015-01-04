@@ -27,13 +27,13 @@ class TestRect(BaseTestCase):
         svg_objects = self.rect._draw()
         svg_object = svg_objects[0]
         # Check instance
-        from svgwrite import shapes, mm
+        from svgwrite import shapes
         self.assertIsInstance(svg_object, shapes.Rect)
         # Check coordinates and sizes
-        self.assertAttrib(svg_object, 'x', self.CORNER[0] * mm)
-        self.assertAttrib(svg_object, 'y', self.CORNER[1] * mm)
-        self.assertAttrib(svg_object, 'width', self.SIZES[0] * mm)
-        self.assertAttrib(svg_object, 'height', self.SIZES[1] * mm)
+        self.assertAttrib(svg_object, 'x', self.CORNER[0])
+        self.assertAttrib(svg_object, 'y', self.CORNER[1])
+        self.assertAttrib(svg_object, 'width', self.SIZES[0])
+        self.assertAttrib(svg_object, 'height', self.SIZES[1])
 
     def test_additional_attribs(self):
         """
