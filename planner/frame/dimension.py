@@ -12,7 +12,7 @@ class BaseDimension(object):
     DEFAULT_ARROW_ATTRIBS = {"fill": "#000000"}
     DEFAULT_LABEL_ATTRIBS = {"font-size": "4", "text-anchor": "middle", "font-family": "Arial"}
     ARROW_LENGTH = 6
-    ARROW_WIDTH = 2
+    ARROW_WIDTH = 1.5
     ARROW_PADDING = 1
 
     def __init__(self, start_point, end_point, label, label_attribs=None, **attribs):
@@ -68,6 +68,21 @@ class BaseDimension(object):
         attribs_merged.update(attribs)
         return shapes.Polygon([start_point, tail1, tail2, start_point], **attribs_merged)
 
+    def _render_text(self, start_point, end_point):
+        middle_point = ((start_point[0] + end_point[0]) / 2, (start_point[1] + end_point[1]) / 2)
+        attribs = self.DEFAULT_LABEL_ATTRIBS.copy()
+        attribs.update(self.label_attribs)
+        if (end_point[0] - start_point[0]) != 0:
+            tan_angle = (end_point[1] - start_point[1]) / (end_point[0] - start_point[0])
+            angle = math.degrees(math.atan(tan_angle))
+        else:
+            angle = -90
+        unit_vector = self._get_perpendicular_unit_vector(start_point, end_point, middle_point)
+        draw_text_center_point = (middle_point[0] + unit_vector[0] * self.ARROW_PADDING,
+                                  middle_point[1] + unit_vector[1] * self.ARROW_PADDING)
+        attribs['transform'] = "rotate({}, {}, {})".format(angle, draw_text_center_point[0], draw_text_center_point[1])
+        return text.Text(self.label, draw_text_center_point, **attribs)
+
     def _draw(self):
         """
         SVG draw logic.
@@ -84,25 +99,6 @@ class LinearDimension(BaseDimension):
     Linear dimensions.
     """
 
-    def __init__(self, start_point, end_point, label, font=None, direction=None, **attribs):
-        super(LinearDimension, self).__init__(start_point, end_point, label, font, **attribs)
-        self.direction = direction
-
-    def _render_text(self):
-        middle_point = ((self.start_point[0] + self.end_point[0]) / 2, (self.start_point[1] + self.end_point[1]) / 2)
-        attribs = self.DEFAULT_LABEL_ATTRIBS.copy()
-        attribs.update(self.label_attribs)
-        if (self.end_point[0] - self.start_point[0]) != 0:
-            tan_angle = (self.end_point[1] - self.start_point[1]) / (self.end_point[0] - self.start_point[0])
-            angle = math.degrees(math.atan(tan_angle))
-        else:
-            angle = -90
-        unit_vector = self._get_perpendicular_unit_vector(self.start_point, self.end_point, middle_point)
-        draw_text_center_point = (middle_point[0] + unit_vector[0] * self.ARROW_PADDING,
-                                  middle_point[1] + unit_vector[1] * self.ARROW_PADDING)
-        attribs['transform'] = "rotate({}, {}, {})".format(angle, draw_text_center_point[0], draw_text_center_point[1])
-        return text.Text(self.label, draw_text_center_point, **attribs)
-
     def _draw(self):
         res = []
         start_middle_point = self._get_middle_point(self.start_point, self.end_point, self.ARROW_LENGTH)
@@ -115,5 +111,53 @@ class LinearDimension(BaseDimension):
         res.append(line)
         res.append(arrow_start)
         res.append(arrow_end)
-        res.append(self._render_text())
+        res.append(self._render_text(self.start_point, self.end_point))
+        return res
+
+
+class ExtensionableLinearDimension(BaseDimension):
+
+    """
+    Linear dimensions with extension lines.
+    """
+
+    EXTENSION_TAIL = 2
+
+    def __init__(self, start_point, end_point, label, font=None, direction=1, extension_size=12, **attribs):
+        """
+        `direction` argument sets extension lines direction:
+            direction >= 0 - extension lines in coordinates increase direction
+            direction < 0 - extension lines in coordinates decrease direction
+        """
+        super(ExtensionableLinearDimension, self).__init__(start_point, end_point, label, font, **attribs)
+        self._direction = direction >= 0
+        self.extension_size = extension_size
+
+    def _draw(self):
+        res = []
+        # Draw lines
+        unit_vector = self._get_perpendicular_unit_vector(self.start_point, self.end_point, self.start_point)
+        # inverse unit vector if needed
+        if self._direction:
+            unit_vector = [-part for part in unit_vector]
+        start_extension_point = (self.start_point[0] + unit_vector[0] * self.extension_size,
+                                 self.start_point[1] + unit_vector[1] * self.extension_size)
+        end_extension_point = (self.end_point[0] + unit_vector[0] * self.extension_size,
+                                 self.end_point[1] + unit_vector[1] * self.extension_size)
+        start_extension_line = shapes.Line(self.start_point, start_extension_point, **self.attribs)
+        end_extension_line = shapes.Line(self.end_point, end_extension_point, **self.attribs)
+        dimension_size = self.extension_size - self.EXTENSION_TAIL
+        start_dimension_point = (self.start_point[0] + unit_vector[0] * dimension_size,
+                                 self.start_point[1] + unit_vector[1] * dimension_size)
+        end_dimension_point = (self.end_point[0] + unit_vector[0] * dimension_size,
+                                 self.end_point[1] + unit_vector[1] * dimension_size)
+        dimension_line = shapes.Line(start_dimension_point, end_dimension_point, **self.attribs)
+        res += [start_extension_line, end_extension_line, dimension_line]
+        # Draw arrows
+        start_arrow_point = self._get_middle_point(start_dimension_point, end_dimension_point, self.ARROW_LENGTH)
+        end_arrow_point = self._get_middle_point(end_dimension_point, start_dimension_point, self.ARROW_LENGTH)
+        res.append(self._create_arrow(start_dimension_point, end_dimension_point, start_arrow_point))
+        res.append(self._create_arrow(end_dimension_point, start_dimension_point, end_arrow_point))
+        # Draw text
+        res.append(self._render_text(start_dimension_point, end_dimension_point))
         return res
