@@ -146,14 +146,14 @@ class ExtensionableLinearDimension(BaseDimension):
         start_extension_point = (self.start_point[0] + unit_vector[0] * self.extension_size,
                                  self.start_point[1] + unit_vector[1] * self.extension_size)
         end_extension_point = (self.end_point[0] + unit_vector[0] * self.extension_size,
-                                 self.end_point[1] + unit_vector[1] * self.extension_size)
+                               self.end_point[1] + unit_vector[1] * self.extension_size)
         start_extension_line = shapes.Line(self.start_point, start_extension_point, **self.attribs)
         end_extension_line = shapes.Line(self.end_point, end_extension_point, **self.attribs)
         dimension_size = self.extension_size - self.EXTENSION_TAIL
         start_dimension_point = (self.start_point[0] + unit_vector[0] * dimension_size,
                                  self.start_point[1] + unit_vector[1] * dimension_size)
         end_dimension_point = (self.end_point[0] + unit_vector[0] * dimension_size,
-                                 self.end_point[1] + unit_vector[1] * dimension_size)
+                               self.end_point[1] + unit_vector[1] * dimension_size)
         dimension_line = shapes.Line(start_dimension_point, end_dimension_point, **self.attribs)
         res += [start_extension_line, end_extension_line, dimension_line]
         # Draw arrows
@@ -169,11 +169,12 @@ class ExtensionableLinearDimension(BaseDimension):
 class TinyExtensionableLinearDimension(ExtensionableLinearDimension):
 
     """
-    Tiny linear dimension, label located on the outter part of 
+    Tiny linear dimension, label located on the outter part of
         elongate dimension line.
     """
 
-    def __init__(self, start_point, end_point, label, font=None, direction=1, extension_size=12, label_position='start', elongation=15, **attribs):
+    def __init__(self, start_point, end_point, label, font=None, direction=1,
+                 extension_size=12, label_position='start', elongation=15, **attribs):
         """
         `direction` argument sets extension lines direction:
             direction >= 0 - extension lines in coordinates increase direction
@@ -182,7 +183,8 @@ class TinyExtensionableLinearDimension(ExtensionableLinearDimension):
             label_position == 'start' - label located close to start_point
             label_position != 'start' - label located close to end_point
         """
-        super(TinyExtensionableLinearDimension, self).__init__(start_point, end_point, label, font, direction, extension_size, **attribs)
+        super(TinyExtensionableLinearDimension, self).__init__(
+            start_point, end_point, label, font, direction, extension_size, **attribs)
         self._start_position = label_position == 'start'
         self.elongation = elongation
 
@@ -196,24 +198,29 @@ class TinyExtensionableLinearDimension(ExtensionableLinearDimension):
         start_extension_point = (self.start_point[0] + unit_vector[0] * self.extension_size,
                                  self.start_point[1] + unit_vector[1] * self.extension_size)
         end_extension_point = (self.end_point[0] + unit_vector[0] * self.extension_size,
-                                 self.end_point[1] + unit_vector[1] * self.extension_size)
+                               self.end_point[1] + unit_vector[1] * self.extension_size)
         start_extension_line = shapes.Line(self.start_point, start_extension_point, **self.attribs)
         end_extension_line = shapes.Line(self.end_point, end_extension_point, **self.attribs)
         dimension_size = self.extension_size - self.EXTENSION_TAIL
         start_dimension_middle_point = (self.start_point[0] + unit_vector[0] * dimension_size,
-                                 self.start_point[1] + unit_vector[1] * dimension_size)
+                                        self.start_point[1] + unit_vector[1] * dimension_size)
         end_dimension_middle_point = (self.end_point[0] + unit_vector[0] * dimension_size,
-                                 self.end_point[1] + unit_vector[1] * dimension_size)
+                                      self.end_point[1] + unit_vector[1] * dimension_size)
         if self._start_position:
-            start_dimension_point = self._get_middle_point(start_dimension_middle_point, end_dimension_middle_point, -(self.elongation + self.ARROW_LENGTH))
-            end_dimension_point = self._get_middle_point(end_dimension_middle_point, start_dimension_middle_point, -(self.ARROW_LENGTH + 2))
+            start_dimension_point = self._get_middle_point(
+                start_dimension_middle_point, end_dimension_middle_point, -(self.elongation + self.ARROW_LENGTH))
+            end_dimension_point = self._get_middle_point(
+                end_dimension_middle_point, start_dimension_middle_point, -(self.ARROW_LENGTH + 2))
         else:
-            end_dimension_point = self._get_middle_point(end_dimension_middle_point, start_dimension_middle_point, -(self.elongation + self.ARROW_LENGTH))
-            start_dimension_point = self._get_middle_point(start_dimension_middle_point, end_dimension_middle_point, -(self.ARROW_LENGTH + 2))
+            end_dimension_point = self._get_middle_point(
+                end_dimension_middle_point, start_dimension_middle_point, -(self.elongation + self.ARROW_LENGTH))
+            start_dimension_point = self._get_middle_point(
+                start_dimension_middle_point, end_dimension_middle_point, -(self.ARROW_LENGTH + 2))
         dimension_line = shapes.Line(start_dimension_point, end_dimension_point, **self.attribs)
         res += [start_extension_line, end_extension_line, dimension_line]
         # Draw arrows
-        start_arrow_point = self._get_middle_point(start_dimension_middle_point, start_dimension_point, self.ARROW_LENGTH)
+        start_arrow_point = self._get_middle_point(
+            start_dimension_middle_point, start_dimension_point, self.ARROW_LENGTH)
         end_arrow_point = self._get_middle_point(end_dimension_middle_point, end_dimension_point, self.ARROW_LENGTH)
         res.append(self._create_arrow(start_dimension_middle_point, start_dimension_point, start_arrow_point))
         res.append(self._create_arrow(end_dimension_middle_point, end_dimension_point, end_arrow_point))
