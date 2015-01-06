@@ -1,8 +1,9 @@
+from planner.frame.polygon import Polygon
 from svgwrite import shapes, text
 import math
 
 
-class BaseDimension(object):
+class BaseDimension(Polygon):
 
     """
     Abstract base class for dimensions objects
