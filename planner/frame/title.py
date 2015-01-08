@@ -110,7 +110,7 @@ class SampleLogoTitle(SampleTitle):
         res.append(self._get_table_line((self.width - 30 - 165, 0), (self.width - 30 - 165, 25)))
         res.append(self._get_table_line((self.width - 30 - 265, 0), (self.width - 30 - 265, 25)))
         res.append(self._get_table_line((self.width - 30 - 245, 18), (self.width - 30 - 245, 25)))
-        res.append(self._get_table_line((self.width - 30 - 265, 18), (self.width - 30 -165, 18)))
+        res.append(self._get_table_line((self.width - 30 - 265, 18), (self.width - 30 - 165, 18)))
         # Text
         # project title
         project_title_insert_point = (self.width - 30 - 195, self._base_point[1] + 11)
