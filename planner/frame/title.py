@@ -1,8 +1,8 @@
-from planner.frame.polygon import Polygon
+from planner.frame.figure import Figure
 from svgwrite import shapes, text
 
 
-class SampleTitle(Polygon):
+class SampleTitle(Figure):
 
     """
     Sample title block.

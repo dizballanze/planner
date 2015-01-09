@@ -1,9 +1,9 @@
-from planner.frame.polygon import Polygon
+from planner.frame.figure import Figure
 from svgwrite import shapes
 from planner.tools import parse_measure_units
 
 
-class Bulkhead(Polygon):
+class Bulkhead(Figure):
 
     """
     Inner walls representation.

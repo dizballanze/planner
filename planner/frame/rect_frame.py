@@ -1,10 +1,10 @@
-from planner.frame.polygon import Polygon
+from planner.frame.figure import Figure
 from planner.frame.aperture import Aperture
 from planner.frame.bulkhead import Bulkhead
 from svgwrite import shapes
 
 
-class RectFrame(Polygon):
+class RectFrame(Figure):
 
     """ Rectangle frame representation """
 

@@ -1,9 +1,9 @@
-from planner.frame.polygon import Polygon
+from planner.frame.figure import Figure
 from svgwrite import shapes, text
 import math
 
 
-class BaseDimension(Polygon):
+class BaseDimension(Figure):
 
     """
     Abstract base class for dimensions objects

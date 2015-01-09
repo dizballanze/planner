@@ -4,9 +4,9 @@ import math
 import sys
 
 
-class Polygon(object):
+class Figure(object):
 
-    """ Absctract Polygon class """
+    """ Absctract drawing figure class """
 
     @property
     def uuid(self):

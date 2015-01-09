@@ -47,7 +47,7 @@ class TestRect(BaseTestCase):
 
     def test_hatching(self):
         """
-        Test that hatching appends to polygon
+        Test that hatching appends to figure
         """
         self.rect.add_hatching(self.ANGLE, self.DISTANCE, self.WIDTH, self.COLOR)
         svg_objects = self.rect._draw()
@@ -56,7 +56,7 @@ class TestRect(BaseTestCase):
 
     def test_filling(self):
         """
-        Test that filling appends to polygon
+        Test that filling appends to figure
         """
         self.rect.add_filling(self.COLOR)
         svg_objects = self.rect._draw()

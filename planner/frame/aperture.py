@@ -1,8 +1,8 @@
-from planner.frame.polygon import Polygon
+from planner.frame.figure import Figure
 from svgwrite import shapes
 
 
-class Aperture(Polygon):
+class Aperture(Figure):
 
     """
     Aperture (door, window, etc) in a wall (only horizontal and vertical walls supported for now)
