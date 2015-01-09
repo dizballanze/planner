@@ -58,6 +58,7 @@ Result:
 
 ## TODO:
 
+-  [ ] Move some features from `Figure` class to mixins
 -  [ ] Size autodetection (using scales)
 -  [ ] Improve tests
 -  [ ] Python 2.x support
