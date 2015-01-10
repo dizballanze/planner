@@ -1,5 +1,8 @@
 demo*
 venv/
+Vagrantfile
+.vagrant/
+
 # Created by https://www.gitignore.io
 
 ### Python ###
