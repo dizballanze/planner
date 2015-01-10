@@ -51,8 +51,12 @@ class Drawing(object):
                     draw.add(svg_obj)
             else:
                 draw.add(drawed)
-            # object can contain masks or clips
-            mask = obj._mask()
-            if mask:
-                draw.defs.add(mask)
+            # defs section (masks, clips, markers, etc)
+            defs = obj._defs()
+            if defs:
+                if hasattr(defs, '__iter__'):
+                    for defs_item in defs:
+                        draw.defs.add(defs_item)
+                else:
+                    draw.defs.add(defs)
         return draw.tostring()

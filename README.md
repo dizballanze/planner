@@ -58,6 +58,7 @@ Result:
 
 ## TODO:
 
+-  [ ] Refactor all dimension arrows to markers
 -  [ ] Move some features from `Figure` class to mixins
 -  [ ] Size autodetection (using scales)
 -  [ ] Improve tests

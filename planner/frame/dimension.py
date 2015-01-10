@@ -1,5 +1,5 @@
 from planner.frame.figure import Figure
-from svgwrite import shapes, text
+from svgwrite import shapes, text, path, container
 import math
 
 
@@ -24,6 +24,9 @@ class BaseDimension(Figure):
         self.attribs.update(attribs)
         self.label_attribs = label_attribs or {}
 
+    def _get_length(self, p1, p2):
+        return ((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2) ** 0.5
+
     def _get_middle_point(self, start_point, end_point, distance=None):
         """
         Calculate point on line specified with 2 points on specified distance.
@@ -31,7 +34,7 @@ class BaseDimension(Figure):
         """
         x1, y1 = start_point
         x2, y2 = end_point
-        line_length = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+        line_length = self._get_length(start_point, end_point)
         if distance is None:
             distance = line_length / 2
         directing_vector = (x2 - x1, y2 - y1)
@@ -55,7 +58,7 @@ class BaseDimension(Figure):
             x = middle_point[0] + 1
             y = middle_point[1]
         directing_vector = (middle_point[0] - x, middle_point[1] - y)
-        line_length = ((middle_point[0] - x) ** 2 + (middle_point[1] - y) ** 2) ** 0.5
+        line_length = self._get_length((x, y), middle_point)
         unit_vector = (directing_vector[0] / line_length, directing_vector[1] / line_length)
         return unit_vector
 
@@ -72,8 +75,8 @@ class BaseDimension(Figure):
         attribs_merged.update(attribs)
         return shapes.Polygon([start_point, tail1, tail2, start_point], **attribs_merged)
 
-    def _render_text(self, start_point, end_point):
-        middle_point = ((start_point[0] + end_point[0]) / 2, (start_point[1] + end_point[1]) / 2)
+    def _render_text(self, start_point, end_point, padding=True):
+        middle_point = self._get_middle_point(start_point, end_point)
         attribs = self.DEFAULT_LABEL_ATTRIBS.copy()
         attribs.update(self.label_attribs)
         if (end_point[0] - start_point[0]) != 0:
@@ -82,8 +85,11 @@ class BaseDimension(Figure):
         else:
             angle = -90
         unit_vector = self._get_perpendicular_unit_vector(start_point, end_point, middle_point)
-        draw_text_center_point = (middle_point[0] + unit_vector[0] * self.ARROW_PADDING,
-                                  middle_point[1] + unit_vector[1] * self.ARROW_PADDING)
+        if padding:
+            draw_text_center_point = (middle_point[0] + unit_vector[0] * self.ARROW_PADDING,
+                                      middle_point[1] + unit_vector[1] * self.ARROW_PADDING)
+        else:
+            draw_text_center_point = middle_point
         attribs['transform'] = "rotate({}, {}, {})".format(angle, draw_text_center_point[0], draw_text_center_point[1])
         return text.Text(self.label, draw_text_center_point, **attribs)
 
@@ -92,9 +98,6 @@ class BaseDimension(Figure):
         SVG draw logic.
         """
         raise NotImplementedError("Draw method is not yet implemented")
-
-    def _mask(self):
-        return False
 
 
 class LinearDimension(BaseDimension):
@@ -233,4 +236,52 @@ class TinyExtensionableLinearDimension(ExtensionableLinearDimension):
             start_text_point = end_arrow_point
             end_text_point = end_dimension_point
         res.append(self._render_text(start_text_point, end_text_point))
+        return res
+
+
+class AngleDimension(BaseDimension):
+
+    """
+    Angle dimension without extension lines.
+    """
+
+    DEFAULT_ATTRIBS = {"stroke-width": "0.5", "stroke": "#000000", "fill-opacity": "0", "stroke-linecap": "butt"}
+
+    def get_marker_id(self, position):
+        return "marker-{}-{}".format(position, self.uuid)
+
+    def _defs(self):
+        markers = []
+        marker_start = container.Marker(size=(self.ARROW_LENGTH, self.ARROW_WIDTH * 2), id=self.get_marker_id('start'), orient="auto", refX=0, refY=self.ARROW_WIDTH)
+        marker_start.add(path.Path(["M", (0, self.ARROW_WIDTH), (self.ARROW_LENGTH, 0), (self.ARROW_LENGTH, self.ARROW_WIDTH * 2), (0, self.ARROW_WIDTH)], **{"stroke": "#000", "stroke-width": 0.5}))
+        markers.append(marker_start)
+        marker_end = container.Marker(size=(self.ARROW_LENGTH, self.ARROW_WIDTH * 2), id=self.get_marker_id('end'), orient="auto", refX=self.ARROW_LENGTH, refY=self.ARROW_WIDTH)
+        marker_end.add(path.Path(["M", (0, 0), (0, self.ARROW_WIDTH * 2), (self.ARROW_LENGTH, self.ARROW_WIDTH), (0, 0)], **{"stroke": "#000", "stroke-width": 0.5}))
+        markers.append(marker_end)
+        return markers
+
+    def _draw(self):
+        res = []
+        # Arc
+        self.attribs.update({"marker-start": "url(#{})".format(self.get_marker_id('start')), "marker-end": "url(#{})".format(self.get_marker_id('end'))})
+        arc = path.Path(**self.attribs)
+        arc.push("M")
+        arc.push(self.start_point)
+        arc_r = length = self._get_length(self.start_point, self.end_point)
+        arc.push_arc(self.end_point, 0, arc_r, large_arc=False, absolute=True)
+        res.append(arc)
+        # Text
+        chord = (length ** 2 - (length ** 2) / 4) ** 0.5
+        middle_point = self._get_middle_point(self.start_point, self.end_point)
+        directing_vector = (self.end_point[0] - self.start_point[0], self.end_point[1] - self.start_point[1])
+        unit_vector = (directing_vector[0] / length, directing_vector[1] / length)
+        ortogonal_vector = (chord * (-unit_vector[1]), chord * unit_vector[0])
+        center = (middle_point[0] + ortogonal_vector[0], middle_point[1] + ortogonal_vector[1])
+
+        radius_vector = ((middle_point[0] - center[0]) / chord, (middle_point[1] - center[1]) / chord)
+        radius_ortogonal_vector = (-radius_vector[1], radius_vector[0])
+        arc_center = (center[0] + radius_vector[0] * (length + self.ARROW_PADDING), center[1] + radius_vector[1] * (length + self.ARROW_PADDING))
+        text_line_start = (arc_center[0] - radius_ortogonal_vector[0] * 10, arc_center[1] - radius_ortogonal_vector[1] * 10)
+        text_line_end = (arc_center[0] + radius_ortogonal_vector[0] * 10, arc_center[1] + radius_ortogonal_vector[1] * 10)
+        res.append(self._render_text(text_line_start, text_line_end, padding=False))
         return res

@@ -17,7 +17,7 @@ class Figure(object):
     def _draw(self):
         raise NotImplementedError("Draw method is not yet implemented")
 
-    def _mask(self):
+    def _defs(self):
         return False
 
     @property
