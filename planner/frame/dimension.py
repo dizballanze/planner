@@ -252,18 +252,25 @@ class AngleDimension(BaseDimension):
 
     def _defs(self):
         markers = []
-        marker_start = container.Marker(size=(self.ARROW_LENGTH, self.ARROW_WIDTH * 2), id=self.get_marker_id('start'), orient="auto", refX=0, refY=self.ARROW_WIDTH)
-        marker_start.add(path.Path(["M", (0, self.ARROW_WIDTH), (self.ARROW_LENGTH, 0), (self.ARROW_LENGTH, self.ARROW_WIDTH * 2), (0, self.ARROW_WIDTH)], **{"stroke": "#000", "stroke-width": 0.5}))
+        marker_start = container.Marker(size=(self.ARROW_LENGTH, self.ARROW_WIDTH * 2),
+                                        id=self.get_marker_id('start'), orient="auto", refX=0, refY=self.ARROW_WIDTH)
+        marker_start.add(
+            path.Path(["M", (0, self.ARROW_WIDTH), (self.ARROW_LENGTH, 0), (self.ARROW_LENGTH, self.ARROW_WIDTH * 2),
+                      (0, self.ARROW_WIDTH)], **{"stroke": "#000", "stroke-width": 0.5}))
         markers.append(marker_start)
-        marker_end = container.Marker(size=(self.ARROW_LENGTH, self.ARROW_WIDTH * 2), id=self.get_marker_id('end'), orient="auto", refX=self.ARROW_LENGTH, refY=self.ARROW_WIDTH)
-        marker_end.add(path.Path(["M", (0, 0), (0, self.ARROW_WIDTH * 2), (self.ARROW_LENGTH, self.ARROW_WIDTH), (0, 0)], **{"stroke": "#000", "stroke-width": 0.5}))
+        marker_end = container.Marker(size=(self.ARROW_LENGTH, self.ARROW_WIDTH * 2), id=self.get_marker_id('end'),
+                                      orient="auto", refX=self.ARROW_LENGTH, refY=self.ARROW_WIDTH)
+        marker_end.add(
+            path.Path(["M", (0, 0), (0, self.ARROW_WIDTH * 2), (self.ARROW_LENGTH, self.ARROW_WIDTH), (0, 0)],
+                      **{"stroke": "#000", "stroke-width": 0.5}))
         markers.append(marker_end)
         return markers
 
     def _draw(self):
         res = []
         # Arc
-        self.attribs.update({"marker-start": "url(#{})".format(self.get_marker_id('start')), "marker-end": "url(#{})".format(self.get_marker_id('end'))})
+        self.attribs.update({"marker-start": "url(#{})".format(self.get_marker_id('start')),
+                             "marker-end": "url(#{})".format(self.get_marker_id('end'))})
         arc = path.Path(**self.attribs)
         arc.push("M")
         arc.push(self.start_point)
@@ -280,8 +287,11 @@ class AngleDimension(BaseDimension):
 
         radius_vector = ((middle_point[0] - center[0]) / chord, (middle_point[1] - center[1]) / chord)
         radius_ortogonal_vector = (-radius_vector[1], radius_vector[0])
-        arc_center = (center[0] + radius_vector[0] * (length + self.ARROW_PADDING), center[1] + radius_vector[1] * (length + self.ARROW_PADDING))
-        text_line_start = (arc_center[0] - radius_ortogonal_vector[0] * 10, arc_center[1] - radius_ortogonal_vector[1] * 10)
-        text_line_end = (arc_center[0] + radius_ortogonal_vector[0] * 10, arc_center[1] + radius_ortogonal_vector[1] * 10)
+        arc_center = (center[0] + radius_vector[0] * (length + self.ARROW_PADDING),
+                      center[1] + radius_vector[1] * (length + self.ARROW_PADDING))
+        text_line_start = (arc_center[0] - radius_ortogonal_vector[0] * 10,
+                           arc_center[1] - radius_ortogonal_vector[1] * 10)
+        text_line_end = (arc_center[0] + radius_ortogonal_vector[0] * 10,
+                         arc_center[1] + radius_ortogonal_vector[1] * 10)
         res.append(self._render_text(text_line_start, text_line_end, padding=False))
         return res
