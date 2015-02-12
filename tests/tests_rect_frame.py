@@ -26,9 +26,13 @@ class TestRectFrame(BaseTestCase):
     def test_draw(self):
         """ Test frame drawing. Should create correct SVG objects. """
         svg_objects = self.rect_frame._draw()
-        self.assertLength(svg_objects, 2)
-        outer, inner = svg_objects
+        self.assertLength(svg_objects, 6)
+        top, left, right, bottom, outer, inner = svg_objects
         from svgwrite import shapes
+        self.assertIsInstance(top, shapes.Rect)
+        self.assertIsInstance(left, shapes.Rect)
+        self.assertIsInstance(right, shapes.Rect)
+        self.assertIsInstance(bottom, shapes.Rect)
         self.assertIsInstance(outer, shapes.Rect)
         self.assertIsInstance(inner, shapes.Rect)
         # Check sizes and coordinates
@@ -40,6 +44,23 @@ class TestRectFrame(BaseTestCase):
         self.assertAttrib(inner, 'y', (self.CORNER[1] + self.WALL_WIDTH))
         self.assertAttrib(inner, 'width', (self.SIZES[0] - 2 * self.WALL_WIDTH))
         self.assertAttrib(inner, 'height', (self.SIZES[1] - 2 * self.WALL_WIDTH))
+        # Check border background rect
+        self.assertAttrib(top, 'x', self.CORNER[0])
+        self.assertAttrib(top, 'y', self.CORNER[1])
+        self.assertAttrib(top, 'width', self.SIZES[0])
+        self.assertAttrib(top, 'height', self.WALL_WIDTH)
+        self.assertAttrib(left, 'x', self.CORNER[0])
+        self.assertAttrib(left, 'y', self.CORNER[1])
+        self.assertAttrib(left, 'width', self.WALL_WIDTH)
+        self.assertAttrib(left, 'height', self.SIZES[1])
+        self.assertAttrib(right, 'x', self.CORNER[0] + self.SIZES[0] - self.WALL_WIDTH)
+        self.assertAttrib(right, 'y', self.CORNER[1])
+        self.assertAttrib(right, 'width', self.WALL_WIDTH)
+        self.assertAttrib(right, 'height', self.SIZES[1])
+        self.assertAttrib(bottom, 'x', self.CORNER[0])
+        self.assertAttrib(bottom, 'y', self.CORNER[1] + self.SIZES[1] - self.WALL_WIDTH)
+        self.assertAttrib(bottom, 'width', self.SIZES[0])
+        self.assertAttrib(bottom, 'height', self.WALL_WIDTH)
 
     def test_additional_attribs(self):
         """
@@ -115,8 +136,8 @@ class TestRectFrame(BaseTestCase):
         # left
         self.rect_frame.add_aperture(10, 50, 50)
         svg_objects = self.rect_frame._draw()
-        self.assertLength(svg_objects, 3)
-        aperture = svg_objects[2]
+        self.assertLength(svg_objects, 7)
+        aperture = svg_objects[6]
         self.assertIsInstance(aperture, shapes.Rect)
         self.assertAttrib(aperture, 'x', 10)
         self.assertAttrib(aperture, 'y', 50)
@@ -125,8 +146,8 @@ class TestRectFrame(BaseTestCase):
         # top
         self.rect_frame.add_aperture(55, 20, 50)
         svg_objects = self.rect_frame._draw()
-        self.assertLength(svg_objects, 4)
-        aperture = svg_objects[3]
+        self.assertLength(svg_objects, 8)
+        aperture = svg_objects[7]
         self.assertIsInstance(aperture, shapes.Rect)
         self.assertAttrib(aperture, 'x', 55)
         self.assertAttrib(aperture, 'y', 20)

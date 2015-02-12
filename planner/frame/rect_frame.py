@@ -39,14 +39,23 @@ class RectFrame(Figure):
             if 'fill' not in rect_params:
                 rect_params['fill'] = "#fff"
         # Create outer and inner rects
-        rect = shapes.Rect(self.corner, self.size, **rect_params)
+        del rect_params['stroke-width']
+        del rect_params['stroke']
+        top_rect = shapes.Rect(self.corner, (self.size[0], self.wall_width), **rect_params)
+        left_rect = shapes.Rect(self.corner, (self.wall_width, self.size[1]), **rect_params)
+        right_rect = shapes.Rect(
+            (self.corner[0] + self.size[0] - self.wall_width, self.corner[1]),
+            (self.wall_width, self.size[1]), **rect_params)
+        bottom_rect = shapes.Rect(
+            (self.corner[0], self.corner[1] + self.size[1] - self.wall_width),
+            (self.size[0], self.wall_width), **rect_params)
+
         inner_params = self.DEFAULT_PARAMS.copy()
         inner_params.update(self.attribs)
-        inner_params['fill'] = "#fff"
-        inner_rect = shapes.Rect(
-            self.inner_corner, self.inner_size, **inner_params)
-        res.append(rect)
-        res.append(inner_rect)
+        inner_params['fill-opacity'] = "0"
+        rect = shapes.Rect(self.corner, self.size, **inner_params)
+        inner_rect = shapes.Rect(self.inner_corner, self.inner_size, **inner_params)
+        res.extend((top_rect, left_rect, right_rect, bottom_rect, rect, inner_rect))
         # Apertures
         if self.apertures:
             for aperture in self.apertures:
