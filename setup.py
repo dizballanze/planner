@@ -7,6 +7,6 @@ setup(name='planner',
       author='Yuri Shikanov',
       author_email='dizballanze@gmail.com',
       license='MIT',
-      packages=['planner'],
+      packages=['planner', 'planner.frame'],
       install_requires=['svgwrite==1.1.6', 'shortuuid==0.4.2'],
       zip_safe=False)
